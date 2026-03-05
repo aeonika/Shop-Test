@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Admin | Panel de Control</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#fdf8f6', 100: '#f2e8e5', 500: '#d48c89', 700: '#a35d5a', 900: '#4a2c2b' },
+                        admin: { 50: '#f8fafc', 800: '#1e293b', 900: '#0f172a' }
+                    },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased h-screen flex overflow-hidden">
+
+    <!-- Pantalla de Login -->
+    <div id="loginOverlay" class="fixed inset-0 bg-admin-900 z-[100] flex justify-center items-center transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+            <h2 class="text-2xl font-bold text-brand-700 mb-1 tracking-widest">LUMINA</h2>
+            <p class="text-slate-500 mb-6 text-sm">Ingresa al panel de administración</p>
+            <form id="loginForm" onsubmit="iniciarSesion(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
+                    <input type="password" id="loginPass" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <button type="submit" id="loginBtn" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-lg transition shadow">Ingresar</button>
+                <p id="loginError" class="text-red-500 text-sm mt-2 hidden text-center"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-admin-900 text-white flex flex-col h-full shrink-0 transition-all duration-300">
+        <div class="p-6 flex items-center justify-center border-b border-admin-800">
+            <span class="text-2xl font-bold tracking-widest text-brand-300">LUMINA <span class="text-sm font-light text-slate-400 block text-center">ADMIN</span></span>
+        </div>
+        
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scrollbar">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center px-4 py-3 bg-brand-500 text-white rounded-xl transition">
+                <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
+            </button>
+            <button onclick="switchTab('productos')" id="nav-productos" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+                <i class="fa-solid fa-gem w-6"></i> Productos
+            </button>
+            <button onclick="switchTab('categorias')" id="nav-categorias" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+                <i class="fa-solid fa-tags w-6"></i> Categorías
+            </button>
+            <button onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+                <i class="fa-solid fa-gear w-6"></i> Configuración
+            </button>
+            <button onclick="switchTab('envios')" id="nav-envios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+                <i class="fa-solid fa-truck w-6"></i> Envíos y Retiros
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-admin-800 space-y-2">
+            <a href="index.html" target="_blank" class="flex items-center justify-center w-full px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg transition text-sm">
+                <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Ver Tienda
+            </a>
+            <button onclick="cerrarSesion()" class="flex items-center justify-center w-full px-4 py-2 border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition text-sm">
+                <i class="fa-solid fa-right-from-bracket mr-2"></i> Cerrar Sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <header class="bg-white shadow-sm border-b border-slate-200 px-8 py-4 flex justify-between items-center z-10 shrink-0">
+            <h1 id="pageTitle" class="text-xl font-semibold text-slate-800">Panel de Control</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-slate-500" id="conexionStatus"><i class="fa-solid fa-circle text-yellow-500 text-[10px] mr-1"></i> Conectando...</span>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8 relative">
+            
+            <!-- SECTION: DASHBOARD -->
+            <div id="sec-dashboard" class="tab-content block space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Total Productos</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-prods">-</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-box"></i></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Categorías</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-cats">-</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-tags"></i></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Destacados</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-destacados">-</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Ofertas Flash</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-flash">-</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-bolt"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: PRODUCTOS -->
+            <div id="sec-productos" class="tab-content hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-medium text-slate-700">Inventario</h2>
+                    <button onclick="abrirModalProducto()" class="bg-brand-500 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium flex items-center shadow-sm">
+                        <i class="fa-solid fa-plus mr-2"></i> Nuevo Producto
+                    </button>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm">
+                                <th class="p-4 font-medium">Producto</th>
+                                <th class="p-4 font-medium">Categoría</th>
+                                <th class="p-4 font-medium">Precio</th>
+                                <th class="p-4 font-medium">Stock</th>
+                                <th class="p-4 font-medium text-center">Destacado</th>
+                                <th class="p-4 font-medium text-center">Relámpago</th>
+                                <th class="p-4 font-medium text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-productos" class="divide-y divide-slate-100 text-sm">
+                            <!-- JS fill -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION: CATEGORÍAS -->
+            <div id="sec-categorias" class="tab-content hidden space-y-6 max-w-3xl">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-4">Añadir Categoría</h3>
+                    <form onsubmit="agregarCategoria(event)" class="flex space-x-4">
+                        <input type="text" id="nuevaCategoria" required placeholder="Ej: Relojes" class="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg transition font-medium">Agregar</button>
+                    </form>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm">
+                                <th class="p-4 font-medium">Nombre de Categoría</th>
+                                <th class="p-4 font-medium text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-categorias" class="divide-y divide-slate-100 text-sm">
+                            <!-- JS fill -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION: CONFIGURACIÓN -->
+            <div id="sec-configuracion" class="tab-content hidden space-y-6 max-w-3xl">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-4 border-b border-slate-100 pb-2">Datos de la Tienda</h3>
+                    <div class="space-y-4">
+                        <input type="hidden" id="conf-id">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nombre de la Tienda</label>
+                            <input type="text" id="conf-nombre" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">URL del Logo (Opcional)</label>
+                            <input type="text" id="conf-logo" placeholder="https://..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Número de WhatsApp (Ventas)</label>
+                            <div class="flex relative">
+                                <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 sm:text-sm"><i class="fa-brands fa-whatsapp text-green-500 text-lg"></i></span>
+                                <input type="text" id="conf-wp" placeholder="Ej: 5491100000000" class="flex-1 w-full px-4 py-2 border border-slate-200 rounded-r-lg focus:ring-2 focus:ring-brand-500">
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                            <button onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: ENVÍOS Y RETIROS -->
+            <div id="sec-envios" class="tab-content hidden space-y-6 max-w-4xl">
+                <div id="contenedor-envios" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- JS fill -->
+                </div>
+                <div class="flex justify-end pt-4">
+                    <button onclick="guardarEnvios()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Tarjetas</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Producto -->
+    <div id="modalProducto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex justify-center items-center opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform" id="modalContent">
+            <div class="flex justify-between items-center p-6 border-b border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Nuevo Producto</h3>
+                <button onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="guardarProducto(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nombre del Producto</label>
+                        <input type="text" id="prod-nombre" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
+                        <select id="prod-categoria" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 bg-white">
+                            <!-- JS fill -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Stock (Unidades)</label>
+                        <input type="number" id="prod-stock" min="0" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Precio Normal ($)</label>
+                        <input type="number" id="prod-precio" min="0" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">URL de la Imagen</label>
+                        <input type="text" id="prod-imagen" placeholder="https://..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4 mt-4 space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div>
+                            <span class="font-medium text-slate-800"><i class="fa-solid fa-star text-yellow-500 mr-2"></i> Destacado</span>
+                        </div>
+                        <input type="checkbox" id="prod-destacado" class="w-5 h-5 text-brand-500">
+                    </div>
+
+                    <div class="p-4 bg-red-50 rounded-xl border border-red-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="font-medium text-red-700"><i class="fa-solid fa-bolt mr-2"></i> Oferta Relámpago</span>
+                            <input type="checkbox" id="prod-relampago" class="w-5 h-5" onchange="toggleRelampagoPrice()">
+                        </div>
+                        <div id="relampago-price-container" class="hidden">
+                            <label class="block text-sm font-medium text-red-700 mb-1">Precio de Oferta ($)</label>
+                            <input type="number" id="prod-desc" min="0" class="w-full px-4 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="cerrarModalProducto()" class="px-6 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Cancelar</button>
+                    <button type="submit" id="btnGuardarProd" class="bg-brand-500 text-white px-6 py-2 rounded-lg hover:bg-brand-600 transition">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="adminToast" class="fixed bottom-4 right-4 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+        <div class="bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl flex items-center space-x-3">
+            <i class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+            <span id="adminToastMsg" class="font-medium text-sm">Completado</span>
+        </div>
+    </div>
+
+    <script>
+        // --- CONEXIÓN SUPABASE ---
+        const supabaseUrl = 'https://epoxwpqeqibeykqjihna.supabase.co';
+        const supabaseKey = 'sb_publishable_1BlG2_E3YEXxRSmcT-Y8pw_AzvsuyOg';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // --- ESTADO GLOBAL ---
+        let dbProductos = [];
+        let dbCategorias = [];
+        let dbConfig = {};
+        let dbEnvios = [];
+        let productoEnEdicion = null;
+
+        // --- AUTENTICACIÓN ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                document.getElementById('loginOverlay').classList.add('opacity-0', 'pointer-events-none');
+                document.getElementById('conexionStatus').innerHTML = '<i class="fa-solid fa-circle text-green-500 text-[10px] mr-1"></i> Online';
+                cargarDatosBase();
+            } else {
+                document.getElementById('loginOverlay').classList.remove('opacity-0', 'pointer-events-none');
+                document.getElementById('conexionStatus').innerHTML = '<i class="fa-solid fa-circle text-red-500 text-[10px] mr-1"></i> Desconectado';
+            }
+        });
+
+        async function iniciarSesion(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPass').value;
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('loginError');
+            
+            btn.textContent = "Verificando...";
+            btn.disabled = true;
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                err.textContent = "Credenciales incorrectas.";
+                err.classList.remove('hidden');
+                btn.textContent = "Ingresar";
+                btn.disabled = false;
+            }
+        }
+
+        async function cerrarSesion() {
+            await supabaseClient.auth.signOut();
+        }
+
+        // --- CARGA DE DATOS PRINCIPAL ---
+        async function cargarDatosBase() {
+            // Cargar Categorías
+            const { data: cats } = await supabaseClient.from('categorias').select('*').order('id', { ascending: true });
+            dbCategorias = cats || [];
+            
+            // Cargar Productos
+            const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
+            dbProductos = prods || [];
+
+            // Cargar Config
+            const { data: conf } = await supabaseClient.from('configuracion').select('*').limit(1);
+            if(conf && conf.length > 0) dbConfig = conf[0];
+
+            // Cargar Envíos
+            const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
+            dbEnvios = envs || [];
+
+            renderDash();
+            renderCategorias();
+            renderProductos();
+            renderConfig();
+            renderEnvios();
+        }
+
+        function renderDash() {
+            document.getElementById('stat-prods').textContent = dbProductos.length;
+            document.getElementById('stat-cats').textContent = dbCategorias.length;
+            document.getElementById('stat-destacados').textContent = dbProductos.filter(p => p.destacado).length;
+            document.getElementById('stat-flash').textContent = dbProductos.filter(p => p.relampago).length;
+        }
+
+        // --- CATEGORIAS ---
+        function renderCategorias() {
+            const tbody = document.getElementById('tabla-categorias');
+            const selectProd = document.getElementById('prod-categoria');
+            tbody.innerHTML = ''; selectProd.innerHTML = '';
+
+            dbCategorias.forEach(cat => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 text-slate-800 font-medium">${cat.nombre}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="eliminarCategoria(${cat.id})" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>`;
+                selectProd.innerHTML += `<option value="${cat.nombre}">${cat.nombre}</option>`;
+            });
+        }
+
+        async function agregarCategoria(e) {
+            e.preventDefault();
+            const input = document.getElementById('nuevaCategoria');
+            const val = input.value.trim();
+            if(!val) return;
+
+            const { data, error } = await supabaseClient.from('categorias').insert([{ nombre: val }]).select();
+            if(error) { alert("Error o categoría duplicada."); return; }
+            
+            dbCategorias.push(data[0]);
+            input.value = '';
+            renderCategorias();
+            renderDash();
+            showToast("Categoría agregada");
+        }
+
+        async function eliminarCategoria(id) {
+            if(!confirm("¿Borrar esta categoría? (Los productos quedarán sin categoría)")) return;
+            const { error } = await supabaseClient.from('categorias').delete().eq('id', id);
+            if(!error) {
+                dbCategorias = dbCategorias.filter(c => c.id !== id);
+                renderCategorias();
+                renderDash();
+                showToast("Categoría eliminada", "warning");
+            }
+        }
+
+        // --- PRODUCTOS ---
+        function renderProductos() {
+            const tbody = document.getElementById('tabla-productos');
+            tbody.innerHTML = '';
+            dbProductos.forEach(prod => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 flex items-center">
+                            <img src="${prod.imagen || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-lg object-cover mr-3 border">
+                            <span class="font-medium">${prod.nombre}</span>
+                        </td>
+                        <td class="p-4 text-slate-500">${prod.categoria}</td>
+                        <td class="p-4 font-medium">$${prod.precio.toLocaleString()}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${prod.stock}</span></td>
+                        <td class="p-4 text-center">
+                            <button onclick="toggleBool(${prod.id}, 'destacado')" class="text-xl ${prod.destacado ? 'text-yellow-500' : 'text-slate-300'}"><i class="fa-solid fa-star"></i></button>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="toggleBool(${prod.id}, 'relampago')" class="text-xl ${prod.relampago ? 'text-red-500' : 'text-slate-300'}"><i class="fa-solid fa-bolt"></i></button>
+                        </td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="editarProducto(${prod.id})" class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="eliminarProducto(${prod.id})" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        async function toggleBool(id, prop) {
+            const prod = dbProductos.find(p => p.id === id);
+            let nuevoValor = !prod[prop];
+            let desc = prod.desc_relampago;
+
+            if(prop === 'relampago' && nuevoValor && !desc) {
+                let input = prompt(`Precio oferta para "${prod.nombre}" (Normal: $${prod.precio}):`);
+                if(input && !isNaN(input)) desc = Number(input); else return;
+            }
+
+            const payload = { [prop]: nuevoValor };
+            if(prop === 'relampago') payload.desc_relampago = desc;
+
+            const { error } = await supabaseClient.from('productos').update(payload).eq('id', id);
+            if(!error) {
+                prod[prop] = nuevoValor;
+                prod.desc_relampago = desc;
+                renderProductos();
+                showToast("Producto actualizado");
+            }
+        }
+
+        async function eliminarProducto(id) {
+            if(!confirm("¿Eliminar este producto permanentemente?")) return;
+            const { error } = await supabaseClient.from('productos').delete().eq('id', id);
+            if(!error) {
+                dbProductos = dbProductos.filter(p => p.id !== id);
+                renderProductos();
+                renderDash();
+                showToast("Producto eliminado", "warning");
+            }
+        }
+
+        // --- MODAL PRODUCTOS ---
+        function toggleRelampagoPrice() {
+            const cont = document.getElementById('relampago-price-container');
+            const input = document.getElementById('prod-desc');
+            if(document.getElementById('prod-relampago').checked) {
+                cont.classList.remove('hidden'); input.required = true;
+            } else {
+                cont.classList.add('hidden'); input.required = false;
+            }
+        }
+
+        function abrirModalProducto() {
+            productoEnEdicion = null;
+            document.getElementById('modalTitle').textContent = "Nuevo Producto";
+            document.getElementById('prod-nombre').value = '';
+            document.getElementById('prod-stock').value = '';
+            document.getElementById('prod-precio').value = '';
+            document.getElementById('prod-imagen').value = '';
+            document.getElementById('prod-destacado').checked = false;
+            document.getElementById('prod-relampago').checked = false;
+            document.getElementById('prod-desc').value = '';
+            toggleRelampagoPrice();
+            document.getElementById('modalProducto').classList.remove('hidden', 'opacity-0');
+            document.getElementById('modalContent').classList.remove('scale-95');
+        }
+
+        function editarProducto(id) {
+            const p = dbProductos.find(x => x.id === id);
+            productoEnEdicion = id;
+            document.getElementById('modalTitle').textContent = "Editar Producto";
+            document.getElementById('prod-nombre').value = p.nombre;
+            document.getElementById('prod-categoria').value = p.categoria;
+            document.getElementById('prod-stock').value = p.stock;
+            document.getElementById('prod-precio').value = p.precio;
+            document.getElementById('prod-imagen').value = p.imagen || '';
+            document.getElementById('prod-destacado').checked = p.destacado;
+            document.getElementById('prod-relampago').checked = p.relampago;
+            document.getElementById('prod-desc').value = p.desc_relampago || '';
+            toggleRelampagoPrice();
+            document.getElementById('modalProducto').classList.remove('hidden', 'opacity-0');
+            document.getElementById('modalContent').classList.remove('scale-95');
+        }
+
+        function cerrarModalProducto() {
+            document.getElementById('modalProducto').classList.add('opacity-0');
+            document.getElementById('modalContent').classList.add('scale-95');
+            setTimeout(() => document.getElementById('modalProducto').classList.add('hidden'), 300);
+        }
+
+        async function guardarProducto(e) {
+            e.preventDefault();
+            document.getElementById('btnGuardarProd').textContent = "Guardando...";
+            
+            const prod = {
+                nombre: document.getElementById('prod-nombre').value,
+                categoria: document.getElementById('prod-categoria').value,
+                stock: Number(document.getElementById('prod-stock').value),
+                precio: Number(document.getElementById('prod-precio').value),
+                imagen: document.getElementById('prod-imagen').value,
+                destacado: document.getElementById('prod-destacado').checked,
+                relampago: document.getElementById('prod-relampago').checked,
+                desc_relampago: document.getElementById('prod-relampago').checked ? Number(document.getElementById('prod-desc').value) : null
+            };
+
+            if(productoEnEdicion) {
+                const { error } = await supabaseClient.from('productos').update(prod).eq('id', productoEnEdicion);
+                if(!error) {
+                    const idx = dbProductos.findIndex(p => p.id === productoEnEdicion);
+                    dbProductos[idx] = { ...dbProductos[idx], ...prod };
+                }
+            } else {
+                const { data, error } = await supabaseClient.from('productos').insert([prod]).select();
+                if(!error) dbProductos.unshift(data[0]); // Añadir al principio
+            }
+
+            document.getElementById('btnGuardarProd').textContent = "Guardar";
+            cerrarModalProducto();
+            renderProductos();
+            renderDash();
+            showToast("Producto guardado");
+        }
+
+        // --- CONFIG & ENVÍOS ---
+        function renderConfig() {
+            document.getElementById('conf-id').value = dbConfig.id || '';
+            document.getElementById('conf-nombre').value = dbConfig.nombre_tienda || '';
+            document.getElementById('conf-logo').value = dbConfig.logo_url || '';
+            document.getElementById('conf-wp').value = dbConfig.whatsapp || '';
+        }
+
+        async function guardarConfiguracion() {
+            const id = document.getElementById('conf-id').value;
+            const data = {
+                nombre_tienda: document.getElementById('conf-nombre').value,
+                logo_url: document.getElementById('conf-logo').value,
+                whatsapp: document.getElementById('conf-wp').value
+            };
+            const { error } = await supabaseClient.from('configuracion').update(data).eq('id', id);
+            if(!error) showToast("Configuración guardada en la nube");
+        }
+
+        function renderEnvios() {
+            const cont = document.getElementById('contenedor-envios');
+            cont.innerHTML = '';
+            dbEnvios.forEach((envio, i) => {
+                cont.innerHTML += `
+                    <div class="bg-white p-6 rounded-xl border border-slate-200">
+                        <input type="hidden" id="envio-id-${i}" value="${envio.id}">
+                        <h4 class="font-bold mb-4 border-b pb-2">Tarjeta ${i + 1}</h4>
+                        <div class="space-y-3">
+                            <input type="text" id="envio-icon-${i}" value="${envio.icono}" class="w-full px-3 py-1.5 border rounded text-sm mb-2" placeholder="Icono (ej: fa-truck)">
+                            <input type="text" id="envio-title-${i}" value="${envio.titulo}" class="w-full px-3 py-1.5 border rounded text-sm font-medium mb-2">
+                            <textarea id="envio-desc-${i}" rows="3" class="w-full px-3 py-1.5 border rounded text-sm">${envio.descripcion}</textarea>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        async function guardarEnvios() {
+            for(let i=0; i < dbEnvios.length; i++) {
+                const id = document.getElementById(`envio-id-${i}`).value;
+                const data = {
+                    icono: document.getElementById(`envio-icon-${i}`).value,
+                    titulo: document.getElementById(`envio-title-${i}`).value,
+                    descripcion: document.getElementById(`envio-desc-${i}`).value
+                };
+                await supabaseClient.from('envios').update(data).eq('id', id);
+            }
+            showToast("Tarjetas de envío actualizadas");
+        }
+
+        // --- UTILIDADES ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-brand-500', 'text-white'));
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const active = document.getElementById(`nav-${tabId}`);
+            active.classList.add('bg-brand-500', 'text-white');
+            active.classList.remove('text-slate-400');
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('adminToast');
+            document.getElementById('adminToastMsg').textContent = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+    </script>
+</body>
+</html>

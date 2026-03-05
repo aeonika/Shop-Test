@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="docTitle">Lumina | Cargando...</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#fdf8f6', 100: '#f2e8e5', 300: '#eebbba', 500: '#d48c89', 700: '#a35d5a', 900: '#4a2c2b' }
+                    },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { scroll-behavior: smooth; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .cart-slide-in { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
+        .cart-slide-in.open { transform: translateX(0); }
+        .toast-enter { animation: fadeUp 0.3s ease-out forwards; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px) translateX(-50%); }
+            to { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+        /* Loader */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #d48c89; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-brand-50 font-sans text-brand-900 antialiased">
+
+    <!-- Loading Overlay Inicial -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center transition-opacity duration-500">
+        <h2 class="font-serif text-3xl font-bold text-brand-700 tracking-wider mb-4 animate-pulse">LUMINA</h2>
+        <div class="loader"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="scrollToSection('hero')">
+                    <span id="navLogo" class="font-serif text-2xl font-bold text-brand-700 tracking-wider">LUMINA</span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#destacados" class="text-gray-600 hover:text-brand-500 transition px-3 py-2 text-sm font-medium">Destacados</a>
+                    <a href="#relampago" class="text-brand-500 hover:text-brand-700 transition px-3 py-2 text-sm font-medium flex items-center"><i class="fa-solid fa-bolt mr-1"></i> Flash</a>
+                    <a href="#catalogo" class="text-gray-600 hover:text-brand-500 transition px-3 py-2 text-sm font-medium">Catálogo</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button id="cartBtn" class="relative text-gray-600 hover:text-brand-700 transition p-2">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                        <span id="cartBadge" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-brand-500 rounded-full transform translate-x-1/4 -translate-y-1/4 hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="bg-brand-100 border-t border-brand-300 overflow-x-auto hide-scrollbar">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 py-2 text-sm" id="categoryMenu"></div>
+        </div>
+    </header>
+
+    <main class="pb-16">
+        <!-- Hero Section -->
+        <section id="hero" class="relative bg-brand-900 text-white overflow-hidden">
+            <div class="absolute inset-0 bg-black/40 z-10"></div>
+            <div class="absolute inset-0 flex items-center justify-center bg-brand-700">
+                <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-60">
+            </div>
+            <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center md:py-32">
+                <h1 class="font-serif text-4xl md:text-6xl font-bold mb-4">Brilla con luz propia</h1>
+                <p class="text-lg md:text-xl font-light mb-8 max-w-2xl mx-auto text-brand-50">Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural en cada ocasión.</p>
+                <a href="#catalogo" class="inline-block bg-brand-500 hover:bg-brand-300 text-white font-medium px-8 py-3 rounded-full transition shadow-lg">Ver Colección</a>
+            </div>
+        </section>
+
+        <!-- Venta Relámpago -->
+        <section id="relampago" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8 hidden">
+            <div class="flex items-center justify-between mb-6 border-b border-brand-300 pb-2">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-bolt text-yellow-500 text-2xl mr-3"></i>
+                    <h2 class="font-serif text-2xl font-bold text-brand-900">Venta Relámpago</h2>
+                </div>
+                <div class="text-sm font-bold bg-red-100 text-red-600 px-3 py-1 rounded-full flex items-center">
+                    <i class="fa-regular fa-clock mr-2"></i> <span id="countdown">02:45:30</span>
+                </div>
+            </div>
+            <div id="flashGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"></div>
+        </section>
+
+        <!-- Destacados -->
+        <section id="destacados" class="bg-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="font-serif text-3xl font-bold text-center text-brand-900 mb-10">Piezas Destacadas</h2>
+                <div id="featuredGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+
+        <!-- Catálogo -->
+        <section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <h2 class="font-serif text-3xl font-bold text-brand-900 mb-4 md:mb-0">Todo el Catálogo</h2>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500">Filtrar:</span>
+                    <select id="mobileCategorySelect" class="bg-white border border-brand-300 text-brand-900 text-sm rounded-lg focus:ring-brand-500 p-2"></select>
+                </div>
+            </div>
+            <div id="catalogGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
+        </section>
+
+        <!-- Envíos (Dinámicos) -->
+        <section id="envios" class="bg-brand-100/50 py-16 border-t border-brand-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-3xl font-bold text-brand-900">Envíos y Retiros</h2>
+                    <p class="text-brand-700 mt-2 font-medium">Llevamos la magia a donde estés</p>
+                </div>
+                <div id="enviosGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Se llena con Supabase -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand-900 text-brand-100 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 md:mb-0 text-center md:text-left">
+                <span id="footerLogo" class="font-serif text-2xl font-bold tracking-wider text-white">LUMINA</span>
+                <p class="text-sm mt-2 opacity-80">Tienda de accesorios y bijouterie.</p>
+            </div>
+            <div class="flex space-x-6 mb-6 md:mb-0">
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+            </div>
+            <div class="text-sm opacity-80">&copy; <span id="year"></span> Todos los derechos reservados.</div>
+        </div>
+    </footer>
+
+    <!-- Carrito Drawer -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="cartDrawer" class="cart-slide-in fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-brand-50">
+            <h2 class="text-lg font-serif font-bold text-brand-900"><i class="fa-solid fa-bag-shopping mr-2"></i> Tu Carrito</h2>
+            <button id="closeCartBtn" class="text-gray-400 hover:text-gray-600 p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        
+        <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 hidden" id="emptyCartMsg">
+                <i class="fa-solid fa-basket-shopping text-5xl opacity-20"></i>
+                <p>Tu carrito está vacío</p>
+                <button onclick="closeCart(); document.getElementById('catalogo').scrollIntoView();" class="text-brand-500 font-medium underline">Ver productos</button>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 p-4 bg-gray-50">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-medium">Total:</span>
+                <span id="cartTotal" class="text-xl font-bold text-brand-900">$0</span>
+            </div>
+            <button id="checkoutBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl shadow flex justify-center items-center transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa-brands fa-whatsapp text-xl mr-2"></i> Pedir por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden">
+        <div class="bg-brand-900 text-white px-6 py-3 rounded-full shadow-lg flex items-center text-sm font-medium">
+            <i class="fa-solid fa-check-circle text-green-400 mr-2" id="toastIcon"></i>
+            <span id="toastMsg">Producto agregado</span>
+        </div>
+    </div>
+
+    <script>
+        // --- CONEXIÓN SUPABASE ---
+        const supabaseUrl = 'https://epoxwpqeqibeykqjihna.supabase.co';
+        const supabaseKey = 'sb_publishable_1BlG2_E3YEXxRSmcT-Y8pw_AzvsuyOg';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // --- ESTADO DE LA APP ---
+        let WHATSAPP_NUMBER = "";
+        let categorias = ["Todos"];
+        let productos = [];
+        let carrito = [];
+        let filtroActual = "Todos";
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- CARGA DE DATOS (AL INICIAR) ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // 1. Cargar Configuración General
+                const { data: config } = await supabaseClient.from('configuracion').select('*').limit(1);
+                if (config && config.length > 0) {
+                    WHATSAPP_NUMBER = config[0].whatsapp;
+                    const nombre = config[0].nombre_tienda;
+                    document.getElementById('docTitle').textContent = `${nombre} | Tienda`;
+                    document.getElementById('navLogo').textContent = nombre;
+                    document.getElementById('footerLogo').textContent = nombre;
+                }
+
+                // 2. Cargar Categorías
+                const { data: cats } = await supabaseClient.from('categorias').select('*');
+                if (cats) {
+                    cats.forEach(c => categorias.push(c.nombre));
+                }
+
+                // 3. Cargar Productos
+                const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
+                if (prods) {
+                    productos = prods;
+                }
+
+                // 4. Cargar Envíos
+                const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
+                if(envs) renderEnvios(envs);
+
+                // Quitar pantalla de carga
+                document.getElementById('loadingOverlay').classList.add('opacity-0', 'pointer-events-none');
+
+                renderizarCategorias();
+                renderizarProductos();
+                actualizarUI();
+                iniciarTemporizadorRelampago();
+
+            } catch (error) {
+                console.error("Error cargando tienda:", error);
+            }
+        });
+
+        function renderEnvios(envs) {
+            const grid = document.getElementById('enviosGrid');
+            grid.innerHTML = '';
+            envs.forEach(env => {
+                grid.innerHTML += `
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-brand-50 hover:shadow-md transition text-center group">
+                        <div class="w-16 h-16 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-500 mb-4 text-2xl group-hover:scale-110 transition duration-300">
+                            <i class="${env.icono}"></i>
+                        </div>
+                        <h3 class="font-bold text-brand-900 mb-2">${env.titulo}</h3>
+                        <p class="text-sm text-gray-600">${env.descripcion}</p>
+                    </div>`;
+            });
+        }
+
+        function renderizarCategorias() {
+            const menu = document.getElementById('categoryMenu');
+            const select = document.getElementById('mobileCategorySelect');
+            menu.innerHTML = ''; select.innerHTML = '';
+
+            categorias.forEach(cat => {
+                const link = document.createElement('button');
+                link.className = `whitespace-nowrap font-medium transition ${filtroActual === cat ? 'text-brand-700 border-b-2 border-brand-700' : 'text-gray-500 hover:text-brand-500'}`;
+                link.textContent = cat;
+                link.onclick = () => filtrarPorCategoria(cat);
+                menu.appendChild(link);
+
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat === "Todos" ? "Todas las categorías" : cat;
+                select.appendChild(option);
+            });
+            select.value = filtroActual;
+            select.onchange = (e) => filtrarPorCategoria(e.target.value);
+        }
+
+        function renderTarjetaProducto(prod, tipo = 'normal') {
+            const precioMostrar = (tipo === 'relampago' && prod.relampago && prod.desc_relampago) ? prod.desc_relampago : prod.precio;
+            const precioViejo = (tipo === 'relampago' && prod.relampago && prod.desc_relampago) ? `<span class="text-sm text-gray-400 line-through mr-2">$${prod.precio.toLocaleString()}</span>` : '';
+            
+            const btnDisabled = prod.stock === 0 ? 'disabled' : '';
+            const btnClass = prod.stock === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-brand-100 text-brand-700 hover:bg-brand-500 hover:text-white';
+            
+            const badge = prod.stock > 0 && prod.stock <= 3 
+                ? `<span class="absolute top-2 left-2 bg-orange-100 text-orange-600 text-xs font-bold px-2 py-1 rounded z-10">¡Solo ${prod.stock}!</span>` 
+                : (prod.stock === 0 ? `<span class="absolute top-2 left-2 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded z-10">Agotado</span>` : '');
+
+            const relampagoBadge = tipo === 'relampago' ? `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10"><i class="fa-solid fa-bolt"></i> Oferta</span>` : '';
+
+            // EL CAMBIO ESTÁ AQUÍ: "aspect-square w-full" en lugar de "h-48", y "h-full" en el contenedor padre
+            return `
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden border border-gray-100 flex flex-col group relative h-full">
+                    ${badge} ${relampagoBadge}
+                    <div class="aspect-square w-full bg-brand-50 flex items-center justify-center relative overflow-hidden">
+                        <img src="${prod.imagen || 'https://via.placeholder.com/400?text=Lumina'}" alt="${prod.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-brand-500 uppercase tracking-wider">${prod.categoria}</span>
+                            <span class="text-xs ${prod.stock > 0 ? 'text-gray-500' : 'text-red-500'} font-medium">Stock: ${prod.stock}</span>
+                        </div>
+                        <h3 class="font-medium text-gray-800 text-sm md:text-base leading-tight mb-2 flex-1">${prod.nombre}</h3>
+                        <div class="flex justify-between items-end mt-2">
+                            <div>
+                                ${precioViejo}
+                                <span class="font-bold text-lg text-brand-900">$${precioMostrar.toLocaleString()}</span>
+                            </div>
+                            <button onclick="agregarAlCarrito(${prod.id})" ${btnDisabled} class="w-8 h-8 rounded-full flex items-center justify-center transition shadow-sm ${btnClass}">
+                                <i class="fa-solid ${prod.stock === 0 ? 'fa-xmark' : 'fa-plus'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderizarProductos() {
+            const relampagoGrid = document.getElementById('flashGrid');
+            const destacadosGrid = document.getElementById('featuredGrid');
+            const catalogoGrid = document.getElementById('catalogGrid');
+
+            relampagoGrid.innerHTML = ''; destacadosGrid.innerHTML = ''; catalogoGrid.innerHTML = '';
+
+            const prodsRelampago = productos.filter(p => p.relampago && p.desc_relampago);
+            const prodsDestacados = productos.filter(p => p.destacado);
+            const prodsCatalogo = filtroActual === "Todos" ? productos : productos.filter(p => p.categoria === filtroActual);
+
+            if(prodsRelampago.length > 0) {
+                document.getElementById('relampago').classList.remove('hidden');
+                prodsRelampago.forEach(p => relampagoGrid.innerHTML += renderTarjetaProducto(p, 'relampago'));
+            } else {
+                document.getElementById('relampago').classList.add('hidden');
+            }
+
+            prodsDestacados.forEach(p => destacadosGrid.innerHTML += renderTarjetaProducto(p));
+
+            if(prodsCatalogo.length === 0){
+                catalogoGrid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No hay productos aquí.</div>`;
+            } else {
+                prodsCatalogo.forEach(p => catalogoGrid.innerHTML += renderTarjetaProducto(p));
+            }
+        }
+
+        function filtrarPorCategoria(cat) {
+            filtroActual = cat;
+            renderizarCategorias();
+            renderizarProductos();
+            document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // --- CARRITO LÓGICA ---
+        function obtenerPrecioFinal(prod) {
+            return (prod.relampago && prod.desc_relampago) ? prod.desc_relampago : prod.precio;
+        }
+
+        function agregarAlCarrito(idProducto) {
+            const producto = productos.find(p => p.id === idProducto);
+            if (!producto || producto.stock === 0) return;
+
+            const item = carrito.find(item => item.id === idProducto);
+
+            if (item) {
+                if (item.cantidad < producto.stock) {
+                    item.cantidad++;
+                    mostrarToast("Cantidad actualizada en carrito");
+                } else {
+                    mostrarToast("Stock máximo alcanzado", false);
+                    return;
+                }
+            } else {
+                carrito.push({
+                    id: producto.id,
+                    nombre: producto.nombre,
+                    precio: obtenerPrecioFinal(producto),
+                    cantidad: 1,
+                    stockMax: producto.stock,
+                    imagen: producto.imagen
+                });
+                mostrarToast("Producto agregado al carrito");
+            }
+            actualizarUI();
+            const btn = document.getElementById('cartBtn');
+            btn.classList.add('scale-110', 'text-brand-500');
+            setTimeout(() => btn.classList.remove('scale-110', 'text-brand-500'), 200);
+        }
+
+        function modificarCantidad(idProducto, delta) {
+            const index = carrito.findIndex(item => item.id === idProducto);
+            if (index === -1) return;
+            const item = carrito[index];
+            const nuevaCantidad = item.cantidad + delta;
+
+            if (nuevaCantidad > 0 && nuevaCantidad <= item.stockMax) item.cantidad = nuevaCantidad;
+            else if (nuevaCantidad === 0) carrito.splice(index, 1);
+            actualizarUI();
+        }
+
+        function actualizarUI() {
+            const badge = document.getElementById('cartBadge');
+            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            
+            if (totalItems > 0) { badge.textContent = totalItems; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+
+            const cartItemsCont = document.getElementById('cartItems');
+            const emptyMsg = document.getElementById('emptyCartMsg');
+            const cartTotal = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            Array.from(cartItemsCont.children).forEach(child => { if(child.id !== 'emptyCartMsg') child.remove(); });
+
+            if (carrito.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                cartTotal.textContent = "$0"; checkoutBtn.disabled = true;
+            } else {
+                emptyMsg.classList.add('hidden');
+                let totalCosto = 0;
+                carrito.forEach(item => {
+                    totalCosto += (item.precio * item.cantidad);
+                    const div = document.createElement('div');
+                    div.className = "flex items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm";
+                    div.innerHTML = `
+                        <div class="w-16 h-16 bg-brand-50 rounded flex items-center justify-center mr-3 overflow-hidden shrink-0">
+                            <img src="${item.imagen || 'https://via.placeholder.com/100?text=Lumina'}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-medium text-gray-800 truncate">${item.nombre}</h4>
+                            <p class="text-brand-700 font-bold text-sm">$${item.precio.toLocaleString()}</p>
+                        </div>
+                        <div class="flex items-center bg-gray-50 rounded-lg ml-2 border border-gray-200">
+                            <button onclick="modificarCantidad(${item.id}, -1)" class="w-8 h-8 text-gray-500 hover:text-brand-700">-</button>
+                            <span class="w-6 text-center text-sm font-medium">${item.cantidad}</span>
+                            <button onclick="modificarCantidad(${item.id}, 1)" class="w-8 h-8 text-gray-500 hover:text-brand-700 ${item.cantidad >= item.stockMax ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                        </div>`;
+                    cartItemsCont.insertBefore(div, emptyMsg);
+                });
+                cartTotal.textContent = `$${totalCosto.toLocaleString()}`;
+                checkoutBtn.disabled = false;
+            }
+        }
+
+        // --- WHATSAPP ---
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (carrito.length === 0) return;
+            const tienda = document.getElementById('navLogo').textContent;
+            let mensaje = `*¡Hola ${tienda}!* 🌟\nQuiero hacer el siguiente pedido:\n\n`;
+            let total = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.precio * item.cantidad; total += subtotal;
+                mensaje += `▪ ${item.cantidad}x *${item.nombre}* ($${item.precio.toLocaleString()}) = $${subtotal.toLocaleString()}\n`;
+            });
+
+            mensaje += `\n*TOTAL: $${total.toLocaleString()}*\n\nPor favor, indícame cómo seguimos con el pago y envío. ¡Gracias! ✨`;
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        });
+
+        // --- UI UTILS ---
+        const cartDrawer = document.getElementById('cartDrawer');
+        const cartOverlay = document.getElementById('cartOverlay');
+
+        function openCart() {
+            cartOverlay.classList.remove('hidden');
+            setTimeout(() => { cartOverlay.classList.remove('opacity-0'); cartDrawer.classList.add('open'); }, 10);
+        }
+
+        function closeCart() {
+            cartDrawer.classList.remove('open'); cartOverlay.classList.add('opacity-0');
+            setTimeout(() => cartOverlay.classList.add('hidden'), 300);
+        }
+
+        document.getElementById('cartBtn').addEventListener('click', openCart);
+        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+        function mostrarToast(mensaje, esExito = true) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = mensaje;
+            document.getElementById('toastIcon').className = esExito ? "fa-solid fa-check-circle text-green-400 mr-2" : "fa-solid fa-circle-exclamation text-yellow-400 mr-2";
+            toast.classList.remove('hidden'); toast.classList.add('toast-enter');
+            setTimeout(() => { toast.classList.remove('toast-enter'); toast.classList.add('hidden'); }, 2500);
+        }
+
+        function iniciarTemporizadorRelampago() {
+            const display = document.getElementById('countdown');
+            let tiempo = 2 * 60 * 60 + 45 * 60 + 30;
+            setInterval(() => {
+                tiempo--; if(tiempo < 0) tiempo = 0;
+                display.textContent = String(Math.floor(tiempo / 3600)).padStart(2, '0') + ':' + 
+                                      String(Math.floor((tiempo % 3600) / 60)).padStart(2, '0') + ':' + 
+                                      String(tiempo % 60).padStart(2, '0');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
