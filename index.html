@@ -44,7 +44,9 @@
 
     <!-- Loading Overlay Inicial -->
     <div id="loadingOverlay" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center transition-opacity duration-500">
-        <h2 class="font-serif text-3xl font-bold text-brand-700 tracking-wider mb-4 animate-pulse">LUMINA</h2>
+        <img id="loadingLogoImg" src="" alt="Logo" class="h-28 w-auto object-contain mb-4 animate-pulse hidden">
+        <h2 id="loadingTextTitle" class="font-serif text-3xl font-bold text-brand-700 tracking-wider mb-2 animate-pulse hidden"></h2>
+        <p class="font-serif text-xl text-brand-500 italic mb-6">Esencias Místicas</p>
         <div class="loader"></div>
     </div>
 
@@ -53,7 +55,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="scrollToSection('hero')">
-                    <span id="navLogo" class="font-serif text-2xl font-bold text-brand-700 tracking-wider">LUMINA</span>
+                    <span id="navLogo" class="flex items-center font-serif text-2xl font-bold text-brand-700 tracking-wider">LUMINA</span>
                 </div>
                 <nav class="hidden md:flex space-x-8">
                     <a href="#destacados" class="text-gray-600 hover:text-brand-500 transition px-3 py-2 text-sm font-medium">Destacados</a>
@@ -139,7 +141,7 @@
     <footer class="bg-brand-900 text-brand-100 py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
             <div class="mb-6 md:mb-0 text-center md:text-left">
-                <span id="footerLogo" class="font-serif text-2xl font-bold tracking-wider text-white">LUMINA</span>
+                <span id="footerLogo" class="flex items-center justify-center md:justify-start font-serif text-2xl font-bold tracking-wider text-white">LUMINA</span>
                 <p class="text-sm mt-2 opacity-80">Tienda de accesorios y bijouterie.</p>
             </div>
             <div class="flex space-x-6 mb-6 md:mb-0">
@@ -208,9 +210,25 @@
                 if (config && config.length > 0) {
                     WHATSAPP_NUMBER = config[0].whatsapp;
                     const nombre = config[0].nombre_tienda;
+                    const logoUrl = config[0].logo_url;
+
                     document.getElementById('docTitle').textContent = `${nombre} | Tienda`;
-                    document.getElementById('navLogo').textContent = nombre;
-                    document.getElementById('footerLogo').textContent = nombre;
+                    
+                    if (logoUrl) {
+                        // Pantalla de carga
+                        document.getElementById('loadingLogoImg').src = logoUrl;
+                        document.getElementById('loadingLogoImg').classList.remove('hidden');
+                        document.getElementById('loadingTextTitle').classList.add('hidden');
+                        
+                        // Navbar y Footer combinando Logo y Texto
+                        document.getElementById('navLogo').innerHTML = `<img src="${logoUrl}" alt="${nombre}" class="h-8 w-auto object-contain mr-2"><span class="truncate">${nombre}</span>`;
+                        document.getElementById('footerLogo').innerHTML = `<img src="${logoUrl}" alt="${nombre}" class="h-10 w-auto object-contain mr-3"><span>${nombre}</span>`;
+                    } else {
+                        document.getElementById('loadingTextTitle').textContent = nombre;
+                        document.getElementById('loadingTextTitle').classList.remove('hidden');
+                        document.getElementById('navLogo').textContent = nombre;
+                        document.getElementById('footerLogo').textContent = nombre;
+                    }
                 }
 
                 // 2. Cargar Categorías
@@ -229,8 +247,10 @@
                 const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
                 if(envs) renderEnvios(envs);
 
-                // Quitar pantalla de carga
-                document.getElementById('loadingOverlay').classList.add('opacity-0', 'pointer-events-none');
+                // Quitar pantalla de carga con un pequeño retraso visual
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').classList.add('opacity-0', 'pointer-events-none');
+                }, 800);
 
                 renderizarCategorias();
                 renderizarProductos();
