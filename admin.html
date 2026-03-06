@@ -172,9 +172,9 @@
             <div id="sec-categorias" class="tab-content hidden space-y-6 max-w-3xl">
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-4">Añadir Categoría</h3>
-                    <form onsubmit="agregarCategoria(event)" class="flex space-x-4">
-                        <input type="text" id="nuevaCategoria" required placeholder="Ej: Relojes" class="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg transition font-medium">Agregar</button>
+                    <form onsubmit="agregarCategoria(event)" class="flex flex-col sm:flex-row gap-4">
+                        <input type="text" id="nuevaCategoria" required placeholder="Ej: Relojes" class="w-full sm:flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <button type="submit" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg transition font-medium">Agregar</button>
                     </form>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-x-auto">
@@ -660,3 +660,6 @@
     </script>
 </body>
 </html>
+</body>
+</html>
+
