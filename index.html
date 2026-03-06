@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="docTitle">Lumina | Cargando...</title>
+    
+    <!-- ================= SEO GLOBAL ================= -->
+    <title id="docTitle">Lumina | Esencias Místicas</title>
+    <meta name="description" content="Descubre nuestra nueva colección de accesorios y bijouterie. Brilla con luz propia con diseños exclusivos y elegantes en Lumina.">
+    <meta name="keywords" content="bijouterie, accesorios, joyas, collares, anillos, pulseras, esencias misticas, lumina">
+    <meta name="author" content="Lumina">
+
+    <!-- Open Graph / Facebook / WhatsApp (Lo que se ve al compartir el link) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Lumina | Esencias Místicas">
+    <meta property="og:description" content="Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural. Envío a todo el país.">
+    <!-- RECOMENDACIÓN: Cambia este link por el de tu Logo o una foto muy buena de tu tienda -->
+    <meta property="og:image" content="https://i.ibb.co/JjrGjKr9/photo-2026-03-05-22-19-08-1.png">
+    <!-- ============================================== -->
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -139,17 +152,30 @@
 
     <!-- Footer -->
     <footer class="bg-brand-900 text-brand-100 py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-6 md:mb-0 text-center md:text-left">
-                <span id="footerLogo" class="flex items-center justify-center md:justify-start font-serif text-2xl font-bold tracking-wider text-white">LUMINA</span>
-                <p class="text-sm mt-2 opacity-80">Tienda de accesorios y bijouterie.</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start">
+                <div class="mb-6 md:mb-0 text-center md:text-left">
+                    <span id="footerLogo" class="flex items-center justify-center md:justify-start font-serif text-2xl font-bold tracking-wider text-white">LUMINA</span>
+                    <p class="text-sm mt-2 opacity-80 max-w-xs">Tu tienda online de accesorios y bijouterie. Diseños únicos para cada momento especial.</p>
+                </div>
+                <div class="flex space-x-6 mb-6 md:mb-0">
+                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+                </div>
             </div>
-            <div class="flex space-x-6 mb-6 md:mb-0">
-                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram text-xl"></i></a>
-                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-tiktok text-xl"></i></a>
-                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+            
+            <!-- Enlaces Legales y de Ayuda -->
+            <div class="mt-8 pt-8 border-t border-brand-800 text-sm opacity-80 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex flex-wrap justify-center gap-4 mb-4 md:mb-0">
+                    <a href="#" class="hover:text-white transition">Preguntas Frecuentes</a>
+                    <span class="hidden md:inline text-brand-700">•</span>
+                    <a href="#" class="hover:text-white transition">Envíos y Devoluciones</a>
+                    <span class="hidden md:inline text-brand-700">•</span>
+                    <a href="#" class="hover:text-white transition">Términos y Condiciones</a>
+                </div>
+                <div>&copy; <span id="year"></span> Todos los derechos reservados.</div>
             </div>
-            <div class="text-sm opacity-80">&copy; <span id="year"></span> Todos los derechos reservados.</div>
         </div>
     </footer>
 
@@ -212,6 +238,8 @@
                     const nombre = config[0].nombre_tienda;
                     const logoUrl = config[0].logo_url;
 
+                    // El título principal para Google sí lo podemos actualizar aquí
+                    document.title = `${nombre} | Tienda de Accesorios`;
                     document.getElementById('docTitle').textContent = `${nombre} | Tienda`;
                     
                     if (logoUrl) {
