@@ -24,7 +24,7 @@
     <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Script de Inicialización Modo Oscuro (Evita flash blanco) -->
+    <!-- Script de Inicialización Modo Oscuro -->
     <script>
         // Por defecto siempre será claro, a menos que el usuario haya tocado el botón de la luna previamente
         if (localStorage.theme === 'dark') {
@@ -421,6 +421,12 @@
 
                     // Cargar Color/Tema 
                     if (c.tema_id) aplicarTema(c.tema_id, c.tema_custom_hex);
+
+                    // Aplicar Modo Oscuro por defecto si está activado y el cliente no ha elegido nada aún
+                    if (c.modo_oscuro_default && !localStorage.getItem('theme')) {
+                        document.documentElement.classList.add('dark');
+                        document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
+                    }
 
                     // Cargar Texto Footer
                     if (c.footer_desc) document.getElementById('footerDesc').textContent = c.footer_desc;
