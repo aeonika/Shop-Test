@@ -106,7 +106,6 @@
             </div>
         </header>
 
-        <!-- ESPACIO INFERIOR EXTRA (pb-28) PARA QUE LOS BOTONES NO QUEDEN OCULTOS EN CELULARES -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-8 pb-28 sm:pb-12 relative">
             
             <!-- SECTION: DASHBOARD -->
@@ -297,7 +296,7 @@
                 <div id="contenedor-envios" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- JS fill -->
                 </div>
-                <div class="flex justify-end pt-4">
+                <div class="flex justify-end pt-4 border-t border-slate-200 mt-4">
                     <button onclick="guardarEnvios()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Tarjetas</button>
                 </div>
             </div>
@@ -391,7 +390,7 @@
     </div>
 
     <!-- Modal Confirmación (Custom) -->
-    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] hidden flex justify-center items-center opacity-0 transition-opacity p-4">
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[120] hidden flex justify-center items-center opacity-0 transition-opacity p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform scale-95 transition-transform text-center" id="confirmModalContent">
             <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -401,6 +400,21 @@
             <div class="flex justify-center space-x-3">
                 <button id="btnConfirmNo" class="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition">Cancelar</button>
                 <button id="btnConfirmYes" class="px-6 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium transition shadow-sm">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Selector de Iconos -->
+    <div id="iconModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] hidden flex justify-center items-center opacity-0 transition-opacity p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 transform scale-95 transition-transform flex flex-col max-h-[80vh]" id="iconModalContent">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100 shrink-0">
+                <h3 class="text-lg font-bold text-slate-800">Seleccionar Icono</h3>
+                <button type="button" onclick="cerrarSelectorIconos()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="overflow-y-auto pr-2 hide-scrollbar">
+                <div id="iconGrid" class="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                    <!-- JS fill -->
+                </div>
             </div>
         </div>
     </div>
@@ -426,6 +440,18 @@
         let dbEnvios = [];
         let dbTestimonios = [];
         let productoEnEdicion = null;
+        
+        // --- ESTADO DE ICONOS ---
+        let tarjetaEnEdicionIcono = null;
+        const iconosDisponibles = [
+            'fa-solid fa-truck-fast', 'fa-solid fa-truck', 'fa-solid fa-store', 'fa-solid fa-shop',
+            'fa-solid fa-gift', 'fa-solid fa-box', 'fa-solid fa-box-open', 'fa-solid fa-motorcycle',
+            'fa-solid fa-location-dot', 'fa-solid fa-map-pin', 'fa-solid fa-credit-card', 'fa-solid fa-wallet',
+            'fa-solid fa-money-bill-wave', 'fa-solid fa-tags', 'fa-solid fa-tag', 'fa-solid fa-star',
+            'fa-solid fa-heart', 'fa-solid fa-gem', 'fa-solid fa-paper-plane', 'fa-solid fa-clock',
+            'fa-solid fa-calendar-check', 'fa-solid fa-shield-halved', 'fa-solid fa-award', 'fa-solid fa-handshake',
+            'fa-brands fa-whatsapp', 'fa-brands fa-instagram', 'fa-solid fa-bag-shopping', 'fa-solid fa-sparkles'
+        ];
 
         // --- MOTOR DE COMPRESIÓN Y UTILIDADES DE IMAGEN ---
         async function compressImage(file, maxWidth, quality) {
@@ -965,18 +991,85 @@
             if(!error) showToast("Configuración guardada en la nube");
         }
 
+        // --- SELECTOR DE ICONOS ---
+        function inicializarGridIconos() {
+            const grid = document.getElementById('iconGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            iconosDisponibles.forEach(icono => {
+                grid.innerHTML += `
+                    <button type="button" onclick="seleccionarIcono('${icono}')" class="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-brand-50 hover:text-brand-500 hover:border-brand-200 transition text-xl shadow-sm">
+                        <i class="${icono}"></i>
+                    </button>
+                `;
+            });
+        }
+
+        function abrirSelectorIconos(index) {
+            tarjetaEnEdicionIcono = index;
+            const modal = document.getElementById('iconModal');
+            const content = document.getElementById('iconModalContent');
+            if(document.getElementById('iconGrid').children.length === 0) inicializarGridIconos();
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function cerrarSelectorIconos() {
+            const modal = document.getElementById('iconModal');
+            const content = document.getElementById('iconModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            tarjetaEnEdicionIcono = null;
+        }
+
+        function seleccionarIcono(iconoClass) {
+            if(tarjetaEnEdicionIcono !== null) {
+                // Actualizamos el input oculto
+                document.getElementById(`envio-icon-${tarjetaEnEdicionIcono}`).value = iconoClass;
+                // Actualizamos la vista previa visual
+                document.getElementById(`envio-icon-preview-${tarjetaEnEdicionIcono}`).className = iconoClass;
+            }
+            cerrarSelectorIconos();
+        }
+
         function renderEnvios() {
             const cont = document.getElementById('contenedor-envios');
             cont.innerHTML = '';
             dbEnvios.forEach((envio, i) => {
                 cont.innerHTML += `
-                    <div class="bg-white p-6 rounded-xl border border-slate-200">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative">
                         <input type="hidden" id="envio-id-${i}" value="${envio.id}">
-                        <h4 class="font-bold mb-4 border-b pb-2">Tarjeta ${i + 1}</h4>
-                        <div class="space-y-3">
-                            <input type="text" id="envio-icon-${i}" value="${envio.icono}" class="w-full px-3 py-1.5 border rounded text-sm mb-2" placeholder="Icono (ej: fa-truck)">
-                            <input type="text" id="envio-title-${i}" value="${envio.titulo}" class="w-full px-3 py-1.5 border rounded text-sm font-medium mb-2">
-                            <textarea id="envio-desc-${i}" rows="3" class="w-full px-3 py-1.5 border rounded text-sm">${envio.descripcion}</textarea>
+                        <h4 class="font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">Tarjeta ${i + 1}</h4>
+                        
+                        <div class="space-y-4">
+                            <!-- Selector de Icono Visual -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Icono</label>
+                                <input type="hidden" id="envio-icon-${i}" value="${envio.icono}">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-14 h-14 bg-brand-50 text-brand-500 rounded-xl flex items-center justify-center text-2xl shadow-sm border border-brand-100 shrink-0">
+                                        <i id="envio-icon-preview-${i}" class="${envio.icono}"></i>
+                                    </div>
+                                    <button type="button" onclick="abrirSelectorIconos(${i})" class="text-sm px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition font-medium">
+                                        <i class="fa-solid fa-pen mr-2"></i> Cambiar Icono
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Título</label>
+                                <input type="text" id="envio-title-${i}" value="${envio.titulo}" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
+                                <textarea id="envio-desc-${i}" rows="3" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 resize-none">${envio.descripcion}</textarea>
+                            </div>
                         </div>
                     </div>`;
             });
