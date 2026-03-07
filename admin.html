@@ -161,6 +161,7 @@
                                 <th class="p-4 font-medium">Stock</th>
                                 <th class="p-4 font-medium text-center">Destacado</th>
                                 <th class="p-4 font-medium text-center">Relámpago</th>
+                                <th class="p-4 font-medium text-center">Orden</th>
                                 <th class="p-4 font-medium text-right">Acciones</th>
                             </tr>
                         </thead>
@@ -323,8 +324,14 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Stock (Unidades)</label>
-                        <input type="number" id="prod-stock" min="0" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                        <label class="block text-sm font-medium text-slate-700 mb-1 flex justify-between items-center">
+                            Stock (Unidades)
+                            <label class="flex items-center space-x-1.5 cursor-pointer bg-red-50 px-2 py-0.5 rounded-full border border-red-100 hover:bg-red-100 transition">
+                                <input type="checkbox" id="prod-agotado" onchange="toggleAgotado()" class="w-3.5 h-3.5 text-red-500 rounded cursor-pointer accent-red-500">
+                                <span class="text-[11px] text-red-600 font-bold uppercase tracking-wide">Sin Stock</span>
+                            </label>
+                        </label>
+                        <input type="number" id="prod-stock" min="0" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 transition-colors">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Precio Normal ($)</label>
@@ -544,8 +551,12 @@
             const { data: cats } = await supabaseClient.from('categorias').select('*').order('id', { ascending: true });
             dbCategorias = cats || [];
             
-            const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
+            // Cargar Productos respetando el orden personalizado
+            const { data: prods } = await supabaseClient.from('productos').select('*').order('orden', { ascending: true }).order('id', { ascending: false });
             dbProductos = prods || [];
+            
+            // Forzamos un orden secuencial limpio por si hay valores nulos o recién creados
+            dbProductos.forEach((p, i) => p.orden = i);
 
             const { data: conf } = await supabaseClient.from('configuracion').select('*').limit(1);
             if(conf && conf.length > 0) dbConfig = conf[0];
@@ -634,7 +645,7 @@
         function renderProductos() {
             const tbody = document.getElementById('tabla-productos');
             tbody.innerHTML = '';
-            dbProductos.forEach(prod => {
+            dbProductos.forEach((prod, i) => {
                 tbody.innerHTML += `
                     <tr>
                         <td class="p-4 flex items-center min-w-[200px]">
@@ -649,6 +660,10 @@
                         </td>
                         <td class="p-4 text-center">
                             <button onclick="toggleBool('${prod.id}', 'relampago')" class="text-xl ${prod.relampago ? 'text-red-500' : 'text-slate-300'}"><i class="fa-solid fa-bolt"></i></button>
+                        </td>
+                        <td class="p-4 text-center whitespace-nowrap">
+                            <button onclick="moverProducto(${i}, -1)" class="p-1.5 text-slate-400 hover:text-brand-500 disabled:opacity-20 transition" ${i === 0 ? 'disabled' : ''} title="Mover Arriba"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button onclick="moverProducto(${i}, 1)" class="p-1.5 text-slate-400 hover:text-brand-500 disabled:opacity-20 transition" ${i === dbProductos.length - 1 ? 'disabled' : ''} title="Mover Abajo"><i class="fa-solid fa-arrow-down"></i></button>
                         </td>
                         <td class="p-4 text-right space-x-2 whitespace-nowrap">
                             <button onclick="editarProducto('${prod.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
@@ -692,7 +707,39 @@
             }
         }
 
+        async function moverProducto(index, direccion) {
+            if (index + direccion < 0 || index + direccion >= dbProductos.length) return;
+
+            const p1 = dbProductos[index];
+            const p2 = dbProductos[index + direccion];
+
+            // Intercambiamos el valor de "orden" localmente
+            const tempOrden = p1.orden;
+            p1.orden = p2.orden;
+            p2.orden = tempOrden;
+
+            // Reordenamos visualmente y redibujamos al instante
+            dbProductos.sort((a, b) => a.orden - b.orden);
+            renderProductos();
+
+            // Guardamos el nuevo orden en Supabase en segundo plano
+            await supabaseClient.from('productos').update({ orden: p1.orden }).eq('id', p1.id);
+            await supabaseClient.from('productos').update({ orden: p2.orden }).eq('id', p2.id);
+        }
+
         // --- MODAL PRODUCTOS ---
+        function toggleAgotado() {
+            const chk = document.getElementById('prod-agotado');
+            const input = document.getElementById('prod-stock');
+            if (chk.checked) {
+                input.value = 0;
+                input.disabled = true;
+            } else {
+                input.disabled = false;
+                if (input.value == 0) input.value = 1;
+            }
+        }
+
         function toggleRelampagoPrice() {
             const cont = document.getElementById('relampago-price-container');
             const input = document.getElementById('prod-desc');
@@ -708,6 +755,8 @@
             document.getElementById('modalTitle').textContent = "Nuevo Producto";
             document.getElementById('prod-nombre').value = '';
             document.getElementById('prod-stock').value = '';
+            document.getElementById('prod-agotado').checked = false;
+            document.getElementById('prod-stock').disabled = false;
             document.getElementById('prod-precio').value = '';
             document.getElementById('prod-descripcion').value = '';
             document.getElementById('prod-destacado').checked = false;
@@ -729,7 +778,16 @@
             document.getElementById('modalTitle').textContent = "Editar Producto";
             document.getElementById('prod-nombre').value = p.nombre;
             document.getElementById('prod-categoria').value = p.categoria;
+            
             document.getElementById('prod-stock').value = p.stock;
+            if(p.stock === 0) {
+                document.getElementById('prod-agotado').checked = true;
+                document.getElementById('prod-stock').disabled = true;
+            } else {
+                document.getElementById('prod-agotado').checked = false;
+                document.getElementById('prod-stock').disabled = false;
+            }
+
             document.getElementById('prod-precio').value = p.precio;
             document.getElementById('prod-descripcion').value = p.descripcion || '';
             document.getElementById('prod-destacado').checked = p.destacado;
@@ -766,7 +824,7 @@
             const prod = {
                 nombre: document.getElementById('prod-nombre').value,
                 categoria: document.getElementById('prod-categoria').value,
-                stock: Number(document.getElementById('prod-stock').value),
+                stock: document.getElementById('prod-agotado').checked ? 0 : Number(document.getElementById('prod-stock').value),
                 precio: Number(document.getElementById('prod-precio').value),
                 imagen: document.getElementById('prod-imagen').value, 
                 descripcion: document.getElementById('prod-descripcion').value,
@@ -786,6 +844,7 @@
                 dbProductos[idx] = { ...dbProductos[idx], ...prod };
                 showToast("Producto actualizado");
             } else {
+                prod.orden = dbProductos.length; // Posicionarlo al final de la lista por defecto
                 const { data, error } = await supabaseClient.from('productos').insert([prod]).select();
                 if(error) {
                     alert("Error en la base de datos:\n" + error.message);
