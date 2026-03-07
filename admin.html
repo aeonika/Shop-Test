@@ -62,19 +62,23 @@
         </div>
         
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scrollbar">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center px-4 py-3 bg-brand-500 text-white rounded-xl transition">
+            <!-- SE AGREGÓ TYPE="BUTTON" PARA EVITAR RECARGAS FANTASMAS -->
+            <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center px-4 py-3 bg-brand-500 text-white rounded-xl transition">
                 <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
             </button>
-            <button onclick="switchTab('productos')" id="nav-productos" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button type="button" onclick="switchTab('productos')" id="nav-productos" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-gem w-6"></i> Productos
             </button>
-            <button onclick="switchTab('categorias')" id="nav-categorias" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button type="button" onclick="switchTab('categorias')" id="nav-categorias" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-tags w-6"></i> Categorías
             </button>
-            <button onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button type="button" onclick="switchTab('testimonios')" id="nav-testimonios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+                <i class="fa-solid fa-star w-6"></i> Testimonios
+            </button>
+            <button type="button" onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-gear w-6"></i> Configuración
             </button>
-            <button onclick="switchTab('envios')" id="nav-envios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button type="button" onclick="switchTab('envios')" id="nav-envios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-truck w-6"></i> Envíos y Retiros
             </button>
         </nav>
@@ -83,7 +87,7 @@
             <a href="index.html" target="_blank" class="flex items-center justify-center w-full px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg transition text-sm">
                 <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Ver Tienda
             </a>
-            <button onclick="cerrarSesion()" class="flex items-center justify-center w-full px-4 py-2 border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition text-sm">
+            <button type="button" onclick="cerrarSesion()" class="flex items-center justify-center w-full px-4 py-2 border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition text-sm">
                 <i class="fa-solid fa-right-from-bracket mr-2"></i> Cerrar Sesión
             </button>
         </div>
@@ -93,7 +97,7 @@
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
         <header class="bg-white shadow-sm border-b border-slate-200 px-8 py-4 flex justify-between items-center z-10 shrink-0">
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-brand-500 transition">
+                <button type="button" onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-brand-500 transition">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
                 <h1 id="pageTitle" class="text-xl font-semibold text-slate-800">Panel de Control</h1>
@@ -143,7 +147,7 @@
             <div id="sec-productos" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-medium text-slate-700">Inventario</h2>
-                    <button onclick="abrirModalProducto()" class="bg-brand-500 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium flex items-center shadow-sm">
+                    <button type="button" onclick="abrirModalProducto()" class="bg-brand-500 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium flex items-center shadow-sm">
                         <i class="fa-solid fa-plus mr-2"></i> Nuevo Producto
                     </button>
                 </div>
@@ -170,7 +174,7 @@
 
             <!-- SECTION: CATEGORÍAS -->
             <div id="sec-categorias" class="tab-content hidden space-y-6 max-w-3xl">
-                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 sm:p-6">
                     <h3 class="text-lg font-semibold mb-4">Añadir Categoría</h3>
                     <form onsubmit="agregarCategoria(event)" class="flex flex-col sm:flex-row gap-4">
                         <input type="text" id="nuevaCategoria" required placeholder="Ej: Relojes" class="w-full sm:flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -189,6 +193,22 @@
                             <!-- JS fill -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- SECTION: TESTIMONIOS -->
+            <div id="sec-testimonios" class="tab-content hidden space-y-6 max-w-5xl">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 sm:p-6">
+                    <h3 class="text-lg font-semibold mb-4">Añadir Imagen de Testimonio</h3>
+                    <p class="text-sm text-slate-500 mb-4">Sube la captura de pantalla de un cliente feliz. Aparecerán como un carrusel deslizable en la página principal.</p>
+                    <form onsubmit="agregarTestimonio(event)" class="flex flex-col sm:flex-row gap-4">
+                        <input type="text" id="nuevoTestimonioImg" required placeholder="URL de la imagen (ej: https://...)" class="w-full sm:flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <button type="submit" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition font-medium shadow-sm">Agregar Testimonio</button>
+                    </form>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4" id="contenedor-testimonios">
+                    <!-- JS fill -->
                 </div>
             </div>
 
@@ -214,7 +234,7 @@
                             </div>
                         </div>
                         <div class="pt-4">
-                            <button onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
+                            <button type="button" onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
                         </div>
                     </div>
                 </div>
@@ -226,7 +246,7 @@
                     <!-- JS fill -->
                 </div>
                 <div class="flex justify-end pt-4">
-                    <button onclick="guardarEnvios()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Tarjetas</button>
+                    <button type="button" onclick="guardarEnvios()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Tarjetas</button>
                 </div>
             </div>
 
@@ -238,7 +258,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform" id="modalContent">
             <div class="flex justify-between items-center p-6 border-b border-slate-100">
                 <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Nuevo Producto</h3>
-                <button onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button type="button" onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form onsubmit="guardarProducto(event)" class="p-6 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
@@ -298,6 +318,21 @@
         </div>
     </div>
 
+    <!-- Modal Confirmación (Custom) -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] hidden flex justify-center items-center opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform scale-95 transition-transform text-center" id="confirmModalContent">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Confirmar Acción</h3>
+            <p id="confirmMessage" class="text-slate-500 mb-6 text-sm">¿Estás seguro?</p>
+            <div class="flex justify-center space-x-3">
+                <button type="button" id="btnConfirmNo" class="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition">Cancelar</button>
+                <button type="button" id="btnConfirmYes" class="px-6 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium transition shadow-sm">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="adminToast" class="fixed bottom-4 right-4 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
         <div class="bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl flex items-center space-x-3">
@@ -317,7 +352,22 @@
         let dbCategorias = [];
         let dbConfig = {};
         let dbEnvios = [];
+        let dbTestimonios = [];
         let productoEnEdicion = null;
+
+        // --- PROTECCIÓN ANTI HACKEOS / ERRORES ---
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, function(match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[match];
+            });
+        }
 
         // --- AUTENTICACIÓN ---
         supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -373,18 +423,60 @@
             const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
             dbEnvios = envs || [];
 
+            // Cargar Testimonios
+            const { data: tests } = await supabaseClient.from('testimonios').select('*').order('id', { ascending: false });
+            dbTestimonios = tests || [];
+
             renderDash();
             renderCategorias();
             renderProductos();
             renderConfig();
             renderEnvios();
+            renderTestimonios();
         }
 
         function renderDash() {
-            document.getElementById('stat-prods').textContent = dbProductos.length;
-            document.getElementById('stat-cats').textContent = dbCategorias.length;
-            document.getElementById('stat-destacados').textContent = dbProductos.filter(p => p.destacado).length;
-            document.getElementById('stat-flash').textContent = dbProductos.filter(p => p.relampago).length;
+            const statProds = document.getElementById('stat-prods');
+            if(statProds) statProds.textContent = dbProductos.length;
+            const statCats = document.getElementById('stat-cats');
+            if(statCats) statCats.textContent = dbCategorias.length;
+            const statDestacados = document.getElementById('stat-destacados');
+            if(statDestacados) statDestacados.textContent = dbProductos.filter(p => p.destacado).length;
+            const statFlash = document.getElementById('stat-flash');
+            if(statFlash) statFlash.textContent = dbProductos.filter(p => p.relampago).length;
+        }
+
+        // --- UTILIDADES GLOBALES DE CONFIRMACIÓN ---
+        // Esta función reemplaza al "confirm()" nativo que falla en celulares
+        function customConfirm(mensaje) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                const content = document.getElementById('confirmModalContent');
+                document.getElementById('confirmMessage').textContent = mensaje;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                }, 10);
+
+                const btnYes = document.getElementById('btnConfirmYes');
+                const btnNo = document.getElementById('btnConfirmNo');
+
+                const cleanup = () => {
+                    modal.classList.add('opacity-0');
+                    content.classList.add('scale-95');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                    btnYes.removeEventListener('click', onYes);
+                    btnNo.removeEventListener('click', onNo);
+                };
+
+                const onYes = () => { cleanup(); resolve(true); };
+                const onNo = () => { cleanup(); resolve(false); };
+
+                btnYes.addEventListener('click', onYes);
+                btnNo.addEventListener('click', onNo);
+            });
         }
 
         // --- CATEGORIAS ---
@@ -396,9 +488,9 @@
             dbCategorias.forEach(cat => {
                 tbody.innerHTML += `
                     <tr>
-                        <td class="p-4 text-slate-800 font-medium">${cat.nombre}</td>
-                        <td class="p-4 text-right">
-                            <button onclick="eliminarCategoria(${cat.id})" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>
+                        <td class="p-4 text-slate-800 font-medium whitespace-nowrap">${cat.nombre}</td>
+                        <td class="p-4 text-right whitespace-nowrap">
+                            <button type="button" onclick="eliminarCategoria('${cat.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>`;
                 selectProd.innerHTML += `<option value="${cat.nombre}">${cat.nombre}</option>`;
@@ -422,10 +514,21 @@
         }
 
         async function eliminarCategoria(id) {
-            if(!confirm("¿Borrar esta categoría? (Los productos quedarán sin categoría)")) return;
+            const categoriaInfo = dbCategorias.find(c => String(c.id) === String(id));
+            if (!categoriaInfo) return;
+
+            const productosEnUso = dbProductos.filter(p => p.categoria === categoriaInfo.nombre);
+            if (productosEnUso.length > 0) {
+                alert(`⚠️ No puedes eliminar "${categoriaInfo.nombre}" porque hay ${productosEnUso.length} producto(s) en esta categoría.`);
+                return;
+            }
+
+            const confirmado = await customConfirm(`¿Estás seguro de borrar la categoría "${categoriaInfo.nombre}"?`);
+            if(!confirmado) return;
+            
             const { error } = await supabaseClient.from('categorias').delete().eq('id', id);
             if(!error) {
-                dbCategorias = dbCategorias.filter(c => c.id !== id);
+                dbCategorias = dbCategorias.filter(c => String(c.id) !== String(id));
                 renderCategorias();
                 renderDash();
                 showToast("Categoría eliminada", "warning");
@@ -439,29 +542,30 @@
             dbProductos.forEach(prod => {
                 tbody.innerHTML += `
                     <tr>
-                        <td class="p-4 flex items-center">
-                            <img src="${prod.imagen || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-lg object-cover mr-3 border">
-                            <span class="font-medium">${prod.nombre}</span>
+                        <td class="p-4 flex items-center min-w-[200px]">
+                            <img src="${prod.imagen || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-lg object-cover mr-3 border shrink-0">
+                            <span class="font-medium truncate">${prod.nombre}</span>
                         </td>
-                        <td class="p-4 text-slate-500">${prod.categoria}</td>
-                        <td class="p-4 font-medium">$${prod.precio.toLocaleString()}</td>
-                        <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${prod.stock}</span></td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${prod.categoria}</td>
+                        <td class="p-4 font-medium whitespace-nowrap">$${prod.precio.toLocaleString()}</td>
+                        <td class="p-4 whitespace-nowrap"><span class="px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${prod.stock}</span></td>
                         <td class="p-4 text-center">
-                            <button onclick="toggleBool(${prod.id}, 'destacado')" class="text-xl ${prod.destacado ? 'text-yellow-500' : 'text-slate-300'}"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="toggleBool('${prod.id}', 'destacado')" class="text-xl ${prod.destacado ? 'text-yellow-500' : 'text-slate-300'}"><i class="fa-solid fa-star"></i></button>
                         </td>
                         <td class="p-4 text-center">
-                            <button onclick="toggleBool(${prod.id}, 'relampago')" class="text-xl ${prod.relampago ? 'text-red-500' : 'text-slate-300'}"><i class="fa-solid fa-bolt"></i></button>
+                            <button type="button" onclick="toggleBool('${prod.id}', 'relampago')" class="text-xl ${prod.relampago ? 'text-red-500' : 'text-slate-300'}"><i class="fa-solid fa-bolt"></i></button>
                         </td>
-                        <td class="p-4 text-right space-x-2">
-                            <button onclick="editarProducto(${prod.id})" class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="eliminarProducto(${prod.id})" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                        <td class="p-4 text-right space-x-2 whitespace-nowrap">
+                            <button type="button" onclick="editarProducto('${prod.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="eliminarProducto('${prod.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>`;
             });
         }
 
         async function toggleBool(id, prop) {
-            const prod = dbProductos.find(p => p.id === id);
+            const prod = dbProductos.find(p => String(p.id) === String(id));
+            if(!prod) return;
             let nuevoValor = !prod[prop];
             let desc = prod.desc_relampago;
 
@@ -483,10 +587,12 @@
         }
 
         async function eliminarProducto(id) {
-            if(!confirm("¿Eliminar este producto permanentemente?")) return;
+            const confirmado = await customConfirm("¿Eliminar este producto permanentemente?");
+            if(!confirmado) return;
+            
             const { error } = await supabaseClient.from('productos').delete().eq('id', id);
             if(!error) {
-                dbProductos = dbProductos.filter(p => p.id !== id);
+                dbProductos = dbProductos.filter(p => String(p.id) !== String(id));
                 renderProductos();
                 renderDash();
                 showToast("Producto eliminado", "warning");
@@ -521,7 +627,8 @@
         }
 
         function editarProducto(id) {
-            const p = dbProductos.find(x => x.id === id);
+            const p = dbProductos.find(x => String(x.id) === String(id));
+            if(!p) return;
             productoEnEdicion = id;
             document.getElementById('modalTitle').textContent = "Editar Producto";
             document.getElementById('prod-nombre').value = p.nombre;
@@ -562,20 +669,90 @@
 
             if(productoEnEdicion) {
                 const { error } = await supabaseClient.from('productos').update(prod).eq('id', productoEnEdicion);
-                if(!error) {
-                    const idx = dbProductos.findIndex(p => p.id === productoEnEdicion);
-                    dbProductos[idx] = { ...dbProductos[idx], ...prod };
+                if(error) {
+                    alert("Error en la base de datos:\n" + error.message);
+                    document.getElementById('btnGuardarProd').textContent = "Guardar";
+                    return;
                 }
+                const idx = dbProductos.findIndex(p => String(p.id) === String(productoEnEdicion));
+                dbProductos[idx] = { ...dbProductos[idx], ...prod };
+                showToast("Producto actualizado");
             } else {
                 const { data, error } = await supabaseClient.from('productos').insert([prod]).select();
-                if(!error) dbProductos.unshift(data[0]); // Añadir al principio
+                if(error) {
+                    alert("Error en la base de datos:\n" + error.message);
+                    document.getElementById('btnGuardarProd').textContent = "Guardar";
+                    return;
+                }
+                if(data) dbProductos.unshift(data[0]);
+                showToast("Producto guardado");
             }
 
             document.getElementById('btnGuardarProd').textContent = "Guardar";
             cerrarModalProducto();
             renderProductos();
             renderDash();
-            showToast("Producto guardado");
+        }
+
+        // --- TESTIMONIOS ---
+        function renderTestimonios() {
+            const cont = document.getElementById('contenedor-testimonios');
+            cont.innerHTML = '';
+            
+            if(dbTestimonios.length === 0) {
+                cont.innerHTML = '<p class="text-slate-400 col-span-full py-4">No has agregado testimonios aún.</p>';
+                return;
+            }
+
+            dbTestimonios.forEach(t => {
+                const safeImg = escapeHTML(t.imagen); // Convertimos el código en texto inofensivo
+                cont.innerHTML += `
+                    <div class="relative bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden aspect-[4/5] group">
+                        <img src="${safeImg}" class="w-full h-full object-cover">
+                        <button type="button" onclick="eliminarTestimonio('${t.id}')" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg z-50 cursor-pointer">
+                            <i class="fa-solid fa-trash-can text-lg pointer-events-none"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        async function agregarTestimonio(e) {
+            e.preventDefault();
+            const input = document.getElementById('nuevoTestimonioImg');
+            const val = input.value.trim();
+            if(!val) return;
+
+            // --- PROTECCIÓN: VALIDAR QUE SEA UNA URL ---
+            if(!val.toLowerCase().startsWith('http://') && !val.toLowerCase().startsWith('https://')) {
+                alert("⚠️ Error: Ingresaste texto o código no válido. Debes ingresar una URL (enlace) de imagen que comience con http:// o https://");
+                return;
+            }
+            // -------------------------------------------
+
+            const { data, error } = await supabaseClient.from('testimonios').insert([{ imagen: val }]).select();
+            if(error) { alert("Error al guardar testimonio:\n" + error.message); return; }
+
+            if(data && data.length > 0) {
+                dbTestimonios.unshift(data[0]);
+            }
+            input.value = '';
+            renderTestimonios();
+            showToast("Testimonio agregado");
+        }
+
+        async function eliminarTestimonio(id) {
+            const confirmado = await customConfirm("¿Estás seguro de borrar este testimonio?");
+            if(!confirmado) return;
+            
+            const { error } = await supabaseClient.from('testimonios').delete().eq('id', id);
+            
+            if(!error) {
+                dbTestimonios = dbTestimonios.filter(t => String(t.id) !== String(id));
+                renderTestimonios();
+                showToast("Testimonio eliminado", "warning");
+            } else {
+                alert("Error al eliminar:\n" + error.message);
+            }
         }
 
         // --- CONFIG & ENVÍOS ---
@@ -660,6 +837,3 @@
     </script>
 </body>
 </html>
-</html>
-
-
