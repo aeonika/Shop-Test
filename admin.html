@@ -199,10 +199,18 @@
             <div id="sec-testimonios" class="tab-content hidden space-y-6 max-w-5xl">
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 sm:p-6">
                     <h3 class="text-lg font-semibold mb-4">Añadir Imagen de Testimonio</h3>
-                    <p class="text-sm text-slate-500 mb-4">Sube la captura de pantalla de un cliente feliz. Aparecerán como un carrusel deslizable en la página principal.</p>
-                    <form onsubmit="agregarTestimonio(event)" class="flex flex-col sm:flex-row gap-4">
-                        <input type="text" id="nuevoTestimonioImg" required placeholder="URL de la imagen (ej: https://...)" class="w-full sm:flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <button type="submit" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition font-medium shadow-sm">Agregar Testimonio</button>
+                    <p class="text-sm text-slate-500 mb-4">Selecciona una imagen desde tu dispositivo. Se comprimirá automáticamente para no ocupar espacio.</p>
+                    
+                    <form onsubmit="agregarTestimonio(event)" class="flex flex-col sm:flex-row gap-4 items-center">
+                        <div class="w-14 h-14 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                            <img id="testimonio-preview" src="" class="w-full h-full object-cover hidden">
+                            <i id="testimonio-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
+                        </div>
+                        <div class="flex-1 w-full">
+                            <input type="hidden" id="nuevoTestimonioImg">
+                            <input type="file" id="nuevoTestimonioFile" accept="image/*" onchange="procesarImagen(this, 'nuevoTestimonioImg', 'testimonio-preview', 'testimonio-icon', 600, 0.75)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                        </div>
+                        <button type="submit" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-full transition font-medium shadow-sm h-[40px] flex items-center justify-center">Agregar</button>
                     </form>
                 </div>
                 
@@ -221,10 +229,22 @@
                             <label class="block text-sm font-medium text-slate-700 mb-1">Nombre de la Tienda</label>
                             <input type="text" id="conf-nombre" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                         </div>
+                        
+                        <!-- Logo con Subida de Archivo -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">URL del Logo (Opcional)</label>
-                            <input type="text" id="conf-logo" placeholder="https://..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Logo de la Tienda</label>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-16 h-16 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                                    <img id="conf-logo-preview" src="" class="w-full h-full object-contain hidden">
+                                    <i id="conf-logo-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="hidden" id="conf-logo">
+                                    <input type="file" id="conf-file" accept="image/*" onchange="procesarImagen(this, 'conf-logo', 'conf-logo-preview', 'conf-logo-icon', 400, 0.85)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                </div>
+                            </div>
                         </div>
+
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Número de WhatsApp (Ventas)</label>
                             <div class="flex relative">
@@ -257,7 +277,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform" id="modalContent">
             <div class="flex justify-between items-center p-6 border-b border-slate-100">
                 <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Nuevo Producto</h3>
-                <button onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button type="button" onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form onsubmit="guardarProducto(event)" class="p-6 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -279,10 +299,22 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Precio Normal ($)</label>
                         <input type="number" id="prod-precio" min="0" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                     </div>
+                    
+                    <!-- Imagen de Producto con Subida -->
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">URL de la Imagen</label>
-                        <input type="text" id="prod-imagen" placeholder="https://..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Imagen del Producto</label>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                                <img id="prod-imagen-preview" src="" class="w-full h-full object-cover hidden">
+                                <i id="prod-imagen-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <input type="hidden" id="prod-imagen">
+                                <input type="file" id="prod-file" accept="image/*" onchange="procesarImagen(this, 'prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 800, 0.80)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                            </div>
+                        </div>
                     </div>
+
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-700 mb-1">Breve Descripción (Opcional)</label>
                         <textarea id="prod-descripcion" rows="2" placeholder="Ej: Hermoso anillo de plata 925 ideal para regalos..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
@@ -354,6 +386,69 @@
         let dbTestimonios = [];
         let productoEnEdicion = null;
 
+        // --- MOTOR DE COMPRESIÓN DE IMÁGENES NATIVO (HTML5 Canvas) ---
+        async function compressImage(file, maxWidth, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Redimensionar respetando proporciones
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Convertir a WebP con la calidad indicada
+                        const compressedBase64 = canvas.toDataURL('image/webp', quality);
+                        resolve(compressedBase64);
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
+        async function procesarImagen(inputEl, hiddenElId, previewImgId, iconId, maxWidth, quality) {
+            const file = inputEl.files[0];
+            if (!file) return;
+
+            showToast("Comprimiendo imagen...");
+            inputEl.disabled = true; // Bloqueamos el input temporalmente
+
+            try {
+                // LLamamos al motor de compresión
+                const base64 = await compressImage(file, maxWidth, quality);
+                
+                // Guardamos el texto comprimido en el input oculto
+                document.getElementById(hiddenElId).value = base64;
+
+                // Actualizamos la vista previa visualmente
+                if (previewImgId) {
+                    const pImg = document.getElementById(previewImgId);
+                    pImg.src = base64;
+                    pImg.classList.remove('hidden');
+                    if(iconId) document.getElementById(iconId).classList.add('hidden');
+                }
+                showToast("¡Imagen lista y optimizada!");
+            } catch (error) {
+                alert("Error al procesar la imagen. Intenta con otra.");
+            } finally {
+                inputEl.disabled = false;
+            }
+        }
+
         // --- PROTECCIÓN ANTI HACKEOS / ERRORES ---
         function escapeHTML(str) {
             if (!str) return '';
@@ -406,23 +501,18 @@
 
         // --- CARGA DE DATOS PRINCIPAL ---
         async function cargarDatosBase() {
-            // Cargar Categorías
             const { data: cats } = await supabaseClient.from('categorias').select('*').order('id', { ascending: true });
             dbCategorias = cats || [];
             
-            // Cargar Productos
             const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
             dbProductos = prods || [];
 
-            // Cargar Config
             const { data: conf } = await supabaseClient.from('configuracion').select('*').limit(1);
             if(conf && conf.length > 0) dbConfig = conf[0];
 
-            // Cargar Envíos
             const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
             dbEnvios = envs || [];
 
-            // Cargar Testimonios
             const { data: tests } = await supabaseClient.from('testimonios').select('*').order('id', { ascending: false });
             dbTestimonios = tests || [];
 
@@ -579,11 +669,18 @@
             document.getElementById('prod-nombre').value = '';
             document.getElementById('prod-stock').value = '';
             document.getElementById('prod-precio').value = '';
-            document.getElementById('prod-imagen').value = '';
             document.getElementById('prod-descripcion').value = '';
             document.getElementById('prod-destacado').checked = false;
             document.getElementById('prod-relampago').checked = false;
             document.getElementById('prod-desc').value = '';
+            
+            // Limpiar imagen y vista previa
+            document.getElementById('prod-imagen').value = '';
+            document.getElementById('prod-file').value = '';
+            document.getElementById('prod-imagen-preview').classList.add('hidden');
+            document.getElementById('prod-imagen-preview').src = '';
+            document.getElementById('prod-imagen-icon').classList.remove('hidden');
+
             toggleRelampagoPrice();
             document.getElementById('modalProducto').classList.remove('hidden', 'opacity-0');
             document.getElementById('modalContent').classList.remove('scale-95');
@@ -598,11 +695,24 @@
             document.getElementById('prod-categoria').value = p.categoria;
             document.getElementById('prod-stock').value = p.stock;
             document.getElementById('prod-precio').value = p.precio;
-            document.getElementById('prod-imagen').value = p.imagen || '';
             document.getElementById('prod-descripcion').value = p.descripcion || '';
             document.getElementById('prod-destacado').checked = p.destacado;
             document.getElementById('prod-relampago').checked = p.relampago;
             document.getElementById('prod-desc').value = p.desc_relampago || '';
+            
+            // Cargar imagen existente en la vista previa
+            document.getElementById('prod-imagen').value = p.imagen || '';
+            document.getElementById('prod-file').value = ''; // Limpiamos el input de archivo
+            if (p.imagen) {
+                document.getElementById('prod-imagen-preview').src = p.imagen;
+                document.getElementById('prod-imagen-preview').classList.remove('hidden');
+                document.getElementById('prod-imagen-icon').classList.add('hidden');
+            } else {
+                document.getElementById('prod-imagen-preview').classList.add('hidden');
+                document.getElementById('prod-imagen-preview').src = '';
+                document.getElementById('prod-imagen-icon').classList.remove('hidden');
+            }
+
             toggleRelampagoPrice();
             document.getElementById('modalProducto').classList.remove('hidden', 'opacity-0');
             document.getElementById('modalContent').classList.remove('scale-95');
@@ -623,7 +733,7 @@
                 categoria: document.getElementById('prod-categoria').value,
                 stock: Number(document.getElementById('prod-stock').value),
                 precio: Number(document.getElementById('prod-precio').value),
-                imagen: document.getElementById('prod-imagen').value,
+                imagen: document.getElementById('prod-imagen').value, // Base64 o URL vieja
                 descripcion: document.getElementById('prod-descripcion').value,
                 destacado: document.getElementById('prod-destacado').checked,
                 relampago: document.getElementById('prod-relampago').checked,
@@ -668,11 +778,10 @@
             }
 
             dbTestimonios.forEach(t => {
-                const safeImg = escapeHTML(t.imagen); // Convertimos el código en texto inofensivo
+                const safeImg = escapeHTML(t.imagen); 
                 cont.innerHTML += `
                     <div class="relative bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden aspect-[4/5] group">
                         <img src="${safeImg}" class="w-full h-full object-cover">
-                        <!-- Botón modificado a z-10 para no pisar el menú de celular -->
                         <button type="button" onclick="eliminarTestimonio('${t.id}')" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg z-10 cursor-pointer">
                             <i class="fa-solid fa-trash-can text-lg pointer-events-none"></i>
                         </button>
@@ -682,13 +791,16 @@
 
         async function agregarTestimonio(e) {
             e.preventDefault();
-            const input = document.getElementById('nuevoTestimonioImg');
-            const val = input.value.trim();
-            if(!val) return;
+            const val = document.getElementById('nuevoTestimonioImg').value;
+            
+            if(!val) {
+                alert("⚠️ Por favor selecciona una imagen de tu dispositivo.");
+                return;
+            }
 
-            // --- PROTECCIÓN ANTI HACKEOS: VALIDAR QUE SEA UNA URL ---
-            if(!val.toLowerCase().startsWith('http://') && !val.toLowerCase().startsWith('https://')) {
-                alert("⚠️ Error: Ingresaste texto o código no válido. Debes ingresar una URL (enlace) de imagen que comience con http:// o https://");
+            // Validar que sea un formato seguro (data:image generado por nuestro compresor o un viejo http)
+            if(!val.startsWith('http') && !val.startsWith('data:image')) {
+                alert("⚠️ Archivo no válido.");
                 return;
             }
 
@@ -698,7 +810,14 @@
             if(data && data.length > 0) {
                 dbTestimonios.unshift(data[0]);
             }
-            input.value = '';
+            
+            // Limpiar la vista previa
+            document.getElementById('nuevoTestimonioImg').value = '';
+            document.getElementById('nuevoTestimonioFile').value = '';
+            document.getElementById('testimonio-preview').classList.add('hidden');
+            document.getElementById('testimonio-preview').src = '';
+            document.getElementById('testimonio-icon').classList.remove('hidden');
+
             renderTestimonios();
             showToast("Testimonio agregado");
         }
@@ -721,15 +840,26 @@
         function renderConfig() {
             document.getElementById('conf-id').value = dbConfig.id || '';
             document.getElementById('conf-nombre').value = dbConfig.nombre_tienda || '';
-            document.getElementById('conf-logo').value = dbConfig.logo_url || '';
             document.getElementById('conf-wp').value = dbConfig.whatsapp || '';
+            
+            // Cargar Logo
+            document.getElementById('conf-logo').value = dbConfig.logo_url || '';
+            if (dbConfig.logo_url) {
+                document.getElementById('conf-logo-preview').src = dbConfig.logo_url;
+                document.getElementById('conf-logo-preview').classList.remove('hidden');
+                document.getElementById('conf-logo-icon').classList.add('hidden');
+            } else {
+                document.getElementById('conf-logo-preview').classList.add('hidden');
+                document.getElementById('conf-logo-preview').src = '';
+                document.getElementById('conf-logo-icon').classList.remove('hidden');
+            }
         }
 
         async function guardarConfiguracion() {
             const id = document.getElementById('conf-id').value;
             const data = {
                 nombre_tienda: document.getElementById('conf-nombre').value,
-                logo_url: document.getElementById('conf-logo').value,
+                logo_url: document.getElementById('conf-logo').value, // Base64 comprimido
                 whatsapp: document.getElementById('conf-wp').value
             };
             const { error } = await supabaseClient.from('configuracion').update(data).eq('id', id);
