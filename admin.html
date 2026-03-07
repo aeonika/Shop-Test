@@ -232,9 +232,16 @@
                             <input type="text" id="conf-nombre" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                         </div>
                         
-                        <!-- NUEVO: Selector de Temas -->
+                        <!-- Selector de Temas y Modo Oscuro por defecto -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-3">Apariencia (Color Principal)</label>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                                <label class="block text-sm font-medium text-slate-700">Apariencia (Color Principal)</label>
+                                <label class="flex items-center space-x-2 cursor-pointer bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition w-fit">
+                                    <i class="fa-solid fa-moon text-slate-500"></i>
+                                    <span class="text-sm text-slate-700 font-medium">Modo Oscuro por defecto</span>
+                                    <input type="checkbox" id="conf-modo-oscuro" class="w-4 h-4 text-brand-500 rounded focus:ring-brand-500 ml-2">
+                                </label>
+                            </div>
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                                 <button type="button" onclick="seleccionarTema('lumina', '#d48c89')" id="theme-btn-lumina" class="theme-btn border-2 border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 transition hover:bg-slate-50">
                                     <div class="w-8 h-8 rounded-full bg-[#d48c89] shadow-sm"></div>
@@ -315,7 +322,7 @@
                             </div>
                         </div>
 
-                        <!-- NUEVO: Textos del Footer -->
+                        <!-- Textos del Footer -->
                         <hr class="my-6 border-slate-100">
                         <h3 class="text-lg font-semibold mb-4 border-b border-slate-100 pb-2">Pie de Página (Footer)</h3>
 
@@ -985,13 +992,11 @@
         function seleccionarTema(temaId, hexCode) {
             document.getElementById('conf-tema-id').value = temaId;
             
-            // Limpiar estilos de los botones
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.remove('border-brand-500', 'bg-brand-50');
                 btn.classList.add('border-slate-100');
             });
             
-            // Agregar borde y fondo al seleccionado
             const activeBtn = document.getElementById(`theme-btn-${temaId}`);
             if(activeBtn) {
                 activeBtn.classList.remove('border-slate-100');
@@ -1002,7 +1007,6 @@
                 document.getElementById('conf-tema-hex').value = hexCode;
                 document.getElementById('conf-color-custom').value = hexCode;
             } else {
-                // Si es custom, leer directamente lo que dice el color picker
                 document.getElementById('conf-tema-hex').value = document.getElementById('conf-color-custom').value;
             }
         }
@@ -1016,6 +1020,9 @@
             document.getElementById('conf-nombre').value = dbConfig.nombre_tienda || '';
             document.getElementById('conf-wp').value = dbConfig.whatsapp || '';
             
+            // Cargar Modo Oscuro
+            document.getElementById('conf-modo-oscuro').checked = dbConfig.modo_oscuro_default || false;
+
             // Cargar Tema
             const temaId = dbConfig.tema_id || 'lumina';
             const temaHex = dbConfig.tema_custom_hex || '#d48c89';
@@ -1064,7 +1071,8 @@
                 hero_img: document.getElementById('conf-hero-img').value,
                 tema_id: document.getElementById('conf-tema-id').value,
                 tema_custom_hex: document.getElementById('conf-tema-hex').value,
-                footer_desc: document.getElementById('conf-footer-desc').value
+                footer_desc: document.getElementById('conf-footer-desc').value,
+                modo_oscuro_default: document.getElementById('conf-modo-oscuro').checked
             };
             const { error } = await supabaseClient.from('configuracion').update(data).eq('id', id);
             if(!error) showToast("Configuración guardada en la nube");
