@@ -206,6 +206,43 @@
         </div>
     </div>
 
+    <!-- Modal de Detalles del Producto -->
+    <div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto transform scale-95 transition-transform duration-300 flex flex-col md:flex-row relative hide-scrollbar" id="productModalContent">
+            <!-- Botón cerrar -->
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 z-20 bg-white/90 text-gray-600 hover:text-brand-700 p-2 rounded-full shadow-sm backdrop-blur"><i class="fa-solid fa-xmark text-xl w-6 h-6 flex items-center justify-center"></i></button>
+            
+            <!-- Imagen -->
+            <div class="w-full md:w-1/2 h-72 md:h-auto bg-brand-50 relative flex-shrink-0">
+                <img id="modalProdImg" src="" alt="Producto" class="w-full h-full object-cover">
+            </div>
+            
+            <!-- Detalles -->
+            <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col bg-white">
+                <span id="modalProdCat" class="text-sm text-brand-500 uppercase tracking-wider font-semibold mb-1"></span>
+                <h2 id="modalProdTitle" class="text-2xl md:text-3xl font-serif font-bold text-brand-900 mb-4 leading-tight"></h2>
+                
+                <div class="flex items-center mb-6">
+                    <span id="modalProdPriceOld" class="text-lg text-gray-400 line-through mr-3 hidden"></span>
+                    <span id="modalProdPrice" class="text-3xl font-bold text-brand-900"></span>
+                </div>
+                
+                <div class="mb-6 flex-1">
+                    <h4 class="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wide">Descripción</h4>
+                    <p id="modalProdDesc" class="text-gray-600 text-sm md:text-base leading-relaxed whitespace-pre-wrap"></p>
+                </div>
+                
+                <div class="mb-6">
+                    <span id="modalProdStock" class="inline-block px-3 py-1 rounded-full text-xs font-bold"></span>
+                </div>
+                
+                <button id="modalProdBtn" class="w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg flex justify-center items-center transition duration-200 mt-auto">
+                    <i class="fa-solid fa-bag-shopping mr-2"></i> Agregar al Carrito
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden">
         <div class="bg-brand-900 text-white px-6 py-3 rounded-full shadow-lg flex items-center text-sm font-medium">
@@ -339,9 +376,9 @@
 
             const relampagoBadge = tipo === 'relampago' ? `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10"><i class="fa-solid fa-bolt"></i> Oferta</span>` : '';
 
-            // Dibujamos la tarjeta, incluyendo la descripción (si existe)
+            // Dibujamos la tarjeta, incluyendo la descripción (si existe) y evento onclick en la tarjeta principal
             return `
-                <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden border border-gray-100 flex flex-col group relative h-full">
+                <div onclick="openProductModal(${prod.id})" class="bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden border border-gray-100 flex flex-col group relative h-full cursor-pointer">
                     ${badge} ${relampagoBadge}
                     <div class="aspect-square w-full bg-brand-50 flex items-center justify-center relative overflow-hidden">
                         <img src="${prod.imagen || 'https://via.placeholder.com/400?text=Lumina'}" alt="${prod.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -358,7 +395,7 @@
                                 ${precioViejo}
                                 <span class="font-bold text-lg text-brand-900">$${precioMostrar.toLocaleString()}</span>
                             </div>
-                            <button onclick="agregarAlCarrito(${prod.id})" ${btnDisabled} class="w-8 h-8 rounded-full flex items-center justify-center transition shadow-sm ${btnClass}">
+                            <button onclick="event.stopPropagation(); agregarAlCarrito(${prod.id})" ${btnDisabled} class="w-8 h-8 rounded-full flex items-center justify-center transition shadow-sm ${btnClass}">
                                 <i class="fa-solid ${prod.stock === 0 ? 'fa-xmark' : 'fa-plus'}"></i>
                             </button>
                         </div>
@@ -521,6 +558,77 @@
             cartDrawer.classList.remove('open'); cartOverlay.classList.add('opacity-0');
             setTimeout(() => cartOverlay.classList.add('hidden'), 300);
         }
+
+        // --- MODAL DETALLE PRODUCTO ---
+        function openProductModal(id) {
+            const prod = productos.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('modalProdImg').src = prod.imagen || 'https://via.placeholder.com/600?text=Lumina';
+            document.getElementById('modalProdCat').textContent = prod.categoria;
+            document.getElementById('modalProdTitle').textContent = prod.nombre;
+            document.getElementById('modalProdDesc').textContent = prod.descripcion || 'Sin descripción adicional.';
+
+            const isRelampago = prod.relampago && prod.desc_relampago;
+            const finalPrice = isRelampago ? prod.desc_relampago : prod.precio;
+
+            document.getElementById('modalProdPrice').textContent = `$${finalPrice.toLocaleString()}`;
+
+            const priceOld = document.getElementById('modalProdPriceOld');
+            if (isRelampago) {
+                priceOld.textContent = `$${prod.precio.toLocaleString()}`;
+                priceOld.classList.remove('hidden');
+            } else {
+                priceOld.classList.add('hidden');
+            }
+
+            const stockEl = document.getElementById('modalProdStock');
+            if (prod.stock > 0) {
+                stockEl.textContent = `Stock disponible: ${prod.stock}`;
+                stockEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700';
+            } else {
+                stockEl.textContent = 'Agotado';
+                stockEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-600';
+            }
+
+            const btn = document.getElementById('modalProdBtn');
+            if (prod.stock > 0) {
+                btn.disabled = false;
+                btn.className = 'w-full bg-brand-500 hover:bg-brand-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg flex justify-center items-center transition duration-200 mt-auto';
+                btn.innerHTML = '<i class="fa-solid fa-bag-shopping mr-2"></i> Agregar al Carrito';
+                btn.onclick = () => { agregarAlCarrito(prod.id); closeProductModal(); openCart(); };
+            } else {
+                btn.disabled = true;
+                btn.className = 'w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl flex justify-center items-center cursor-not-allowed mt-auto';
+                btn.innerHTML = 'Agotado';
+                btn.onclick = null;
+            }
+
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('productModalContent');
+            modal.classList.remove('hidden');
+            
+            // Pequeño timeout para la animación
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeProductModal() {
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('productModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Cierra el modal si se hace click fuera de él
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProductModal();
+        });
 
         document.getElementById('cartBtn').addEventListener('click', openCart);
         document.getElementById('closeCartBtn').addEventListener('click', closeCart);
