@@ -359,12 +359,38 @@
         // --- RENDER TESTIMONIOS (CON FALLBACK) ---
         function desplazarTestimonios(direccion) {
             const grid = document.getElementById('testimoniosGrid');
-            if (!grid || grid.children.length === 0) return;
+            if (!grid || grid.children.length < 2) return;
             
-            // Calculamos el ancho de la tarjeta y le sumamos un margen extra (+50px).
-            // Esto asegura que el impulso venza la fuerza del "snap" y avance la imagen completa.
-            const cardWidth = grid.children[0].offsetWidth; 
-            grid.scrollBy({ left: (cardWidth + 50) * direccion, behavior: 'smooth' });
+            // Calculamos el centro exacto de la pantalla (zona visible del carrusel)
+            const gridRect = grid.getBoundingClientRect();
+            const vistaCentro = gridRect.left + (gridRect.width / 2);
+            
+            let indexActual = 0;
+            let minDistancia = Infinity;
+
+            // Evaluamos tarjeta por tarjeta para saber cuál está actualmente en el medio
+            Array.from(grid.children).forEach((child, i) => {
+                const childRect = child.getBoundingClientRect();
+                const centroHijo = childRect.left + (childRect.width / 2);
+                const distancia = Math.abs(centroHijo - vistaCentro);
+                
+                if (distancia < minDistancia) {
+                    minDistancia = distancia;
+                    indexActual = i;
+                }
+            });
+
+            // Marcamos la siguiente tarjeta (adelante o atrás)
+            let targetIndex = indexActual + direccion;
+            if (targetIndex < 0) targetIndex = 0;
+            if (targetIndex >= grid.children.length) targetIndex = grid.children.length - 1;
+
+            // Usamos la función nativa del navegador para centrar esa tarjeta exacta sin importar los márgenes
+            grid.children[targetIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',   // Evita que la página salte hacia arriba o abajo
+                inline: 'center'    // Centra el elemento horizontalmente
+            });
         }
 
         function renderTestimonios(testimonios) {
@@ -395,8 +421,9 @@
             }
             
             dataToRender.forEach(t => {
+                // Le quitamos el atributo 'snap-always' que provocaba el frenado anticipado
                 grid.innerHTML += `
-                    <div class="shrink-0 w-64 sm:w-72 aspect-[4/5] snap-center snap-always rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 hover:shadow-md transition">
+                    <div class="shrink-0 w-64 sm:w-72 aspect-[4/5] snap-center rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 hover:shadow-md transition">
                         <img src="${t.imagen}" class="w-full h-full object-cover" alt="Testimonio de cliente">
                     </div>`;
             });
