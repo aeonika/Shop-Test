@@ -15,7 +15,7 @@
     <meta property="og:title" content="Lumina | Esencias Místicas">
     <meta property="og:description" content="Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural. Envío a todo el país.">
     <!-- RECOMENDACIÓN: Cambia este link por el de tu Logo o una foto muy buena de tu tienda -->
-    <meta property="og:image" content="https://i.ibb.co/JjrGjKr9/photo-2026-03-05-22-19-08-1.png">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80">
     <!-- ============================================== -->
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -133,7 +133,40 @@
                     <select id="mobileCategorySelect" class="bg-white border border-brand-300 text-brand-900 text-sm rounded-lg focus:ring-brand-500 p-2"></select>
                 </div>
             </div>
+            
             <div id="catalogGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
+            
+            <!-- Botón Ver Todos -->
+            <div id="verTodosContainer" class="flex justify-center w-full mt-8">
+                <!-- Se inyecta con JS si hay más de 21 productos -->
+            </div>
+        </section>
+
+        <!-- Testimonios de Compra -->
+        <section id="testimonios-sec" class="bg-white py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <h2 class="font-serif text-3xl font-bold text-brand-900">Clientes Felices</h2>
+                    <p class="text-brand-500 mt-2 font-medium">Gracias por elegirnos</p>
+                </div>
+                
+                <div class="relative">
+                    <!-- Flecha Izquierda -->
+                    <button id="btnTestimonioPrev" onclick="desplazarTestimonios(-1)" class="hidden">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <!-- Contenedor Desplazable -->
+                    <div class="flex overflow-x-auto space-x-6 pb-6 pt-2 px-4 hide-scrollbar snap-x snap-mandatory scroll-smooth" id="testimoniosGrid">
+                        <!-- Las fotos se inyectan con JS -->
+                    </div>
+
+                    <!-- Flecha Derecha -->
+                    <button id="btnTestimonioNext" onclick="desplazarTestimonios(1)" class="hidden">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- Envíos (Dinámicos) -->
@@ -263,6 +296,8 @@
         let productos = [];
         let carrito = [];
         let filtroActual = "Todos";
+        let mostrarTodosCatalogo = false; // Estado para el botón "Ver Todos"
+        
         document.getElementById('year').textContent = new Date().getFullYear();
 
         // --- CARGA DE DATOS (AL INICIAR) ---
@@ -275,17 +310,13 @@
                     const nombre = config[0].nombre_tienda;
                     const logoUrl = config[0].logo_url;
 
-                    // El título principal para Google sí lo podemos actualizar aquí
                     document.title = `${nombre} | Tienda de Accesorios`;
                     document.getElementById('docTitle').textContent = `${nombre} | Tienda`;
                     
                     if (logoUrl) {
-                        // Pantalla de carga
                         document.getElementById('loadingLogoImg').src = logoUrl;
                         document.getElementById('loadingLogoImg').classList.remove('hidden');
                         document.getElementById('loadingTextTitle').classList.add('hidden');
-                        
-                        // Navbar y Footer combinando Logo y Texto
                         document.getElementById('navLogo').innerHTML = `<img src="${logoUrl}" alt="${nombre}" class="h-8 w-auto object-contain mr-2"><span class="truncate">${nombre}</span>`;
                         document.getElementById('footerLogo').innerHTML = `<img src="${logoUrl}" alt="${nombre}" class="h-10 w-auto object-contain mr-3"><span>${nombre}</span>`;
                     } else {
@@ -298,24 +329,21 @@
 
                 // 2. Cargar Categorías
                 const { data: cats } = await supabaseClient.from('categorias').select('*');
-                if (cats) {
-                    cats.forEach(c => categorias.push(c.nombre));
-                }
+                if (cats) cats.forEach(c => categorias.push(c.nombre));
 
                 // 3. Cargar Productos
                 const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
-                if (prods) {
-                    productos = prods;
-                }
+                if (prods) productos = prods;
 
                 // 4. Cargar Envíos
                 const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
                 if(envs) renderEnvios(envs);
 
-                // Quitar pantalla de carga con un pequeño retraso visual
-                setTimeout(() => {
-                    document.getElementById('loadingOverlay').classList.add('opacity-0', 'pointer-events-none');
-                }, 800);
+                // 5. Cargar Testimonios
+                const { data: tests } = await supabaseClient.from('testimonios').select('*').order('id', { ascending: false });
+                renderTestimonios(tests); // Llamamos SIEMPRE a la función para que dibuje las imágenes de prueba si está vacío
+
+                setTimeout(() => document.getElementById('loadingOverlay').classList.add('opacity-0', 'pointer-events-none'), 800);
 
                 renderizarCategorias();
                 renderizarProductos();
@@ -326,6 +354,50 @@
                 console.error("Error cargando tienda:", error);
             }
         });
+
+        // --- RENDER TESTIMONIOS (CON FALLBACK) ---
+        function desplazarTestimonios(direccion) {
+            const grid = document.getElementById('testimoniosGrid');
+            if (!grid || grid.children.length === 0) return;
+            
+            // Calculamos el ancho de una tarjeta + el espacio (gap) para mover exactamente 1 foto a la vez
+            const cardWidth = grid.children[0].offsetWidth + 24; // 24px corresponde a la clase space-x-6
+            grid.scrollBy({ left: cardWidth * direccion, behavior: 'smooth' });
+        }
+
+        function renderTestimonios(testimonios) {
+            const grid = document.getElementById('testimoniosGrid');
+            const btnPrev = document.getElementById('btnTestimonioPrev');
+            const btnNext = document.getElementById('btnTestimonioNext');
+            grid.innerHTML = '';
+            
+            // Si no hay testimonios en la base de datos, usamos unas imágenes de demostración
+            let dataToRender = testimonios;
+            if (!testimonios || testimonios.length === 0) {
+                dataToRender = [
+                    { imagen: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=400&q=80' },
+                    { imagen: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=400&q=80' },
+                    { imagen: 'https://images.unsplash.com/photo-1599643478524-fb66f70d00f0?auto=format&fit=crop&w=400&q=80' },
+                    { imagen: 'https://images.unsplash.com/photo-1573408301145-b98c4af01158?auto=format&fit=crop&w=400&q=80' }
+                ];
+            }
+            
+            // Mostrar flechas solo en escritorio (md:flex) y si hay 4 o más testimonios
+            if (dataToRender.length >= 4) {
+                if (btnPrev) btnPrev.className = "hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -ml-2 sm:-ml-5 z-10 bg-white text-brand-700 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 transition focus:outline-none border border-gray-100";
+                if (btnNext) btnNext.className = "hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 -mr-2 sm:-mr-5 z-10 bg-white text-brand-700 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 transition focus:outline-none border border-gray-100";
+            } else {
+                if (btnPrev) btnPrev.className = "hidden";
+                if (btnNext) btnNext.className = "hidden";
+            }
+            
+            dataToRender.forEach(t => {
+                grid.innerHTML += `
+                    <div class="shrink-0 w-64 sm:w-72 aspect-[4/5] snap-center rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 hover:shadow-md transition">
+                        <img src="${t.imagen}" class="w-full h-full object-cover" alt="Testimonio de cliente">
+                    </div>`;
+            });
+        }
 
         function renderEnvios(envs) {
             const grid = document.getElementById('enviosGrid');
@@ -376,7 +448,6 @@
 
             const relampagoBadge = tipo === 'relampago' ? `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10"><i class="fa-solid fa-bolt"></i> Oferta</span>` : '';
 
-            // Dibujamos la tarjeta, incluyendo la descripción (si existe) y evento onclick en la tarjeta principal
             return `
                 <div onclick="openProductModal(${prod.id})" class="bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden border border-gray-100 flex flex-col group relative h-full cursor-pointer">
                     ${badge} ${relampagoBadge}
@@ -408,6 +479,7 @@
             const relampagoGrid = document.getElementById('flashGrid');
             const destacadosGrid = document.getElementById('featuredGrid');
             const catalogoGrid = document.getElementById('catalogGrid');
+            const verTodosCont = document.getElementById('verTodosContainer');
 
             relampagoGrid.innerHTML = ''; destacadosGrid.innerHTML = ''; catalogoGrid.innerHTML = '';
 
@@ -426,13 +498,29 @@
 
             if(prodsCatalogo.length === 0){
                 catalogoGrid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No hay productos aquí.</div>`;
+                verTodosCont.innerHTML = '';
             } else {
-                prodsCatalogo.forEach(p => catalogoGrid.innerHTML += renderTarjetaProducto(p));
+                // LÓGICA DE TOPE (21 PRODUCTOS)
+                const limite = 21;
+                
+                if (prodsCatalogo.length > limite && !mostrarTodosCatalogo) {
+                    prodsCatalogo.slice(0, limite).forEach(p => catalogoGrid.innerHTML += renderTarjetaProducto(p));
+                    verTodosCont.innerHTML = `<button onclick="mostrarRestoCatalogo()" class="px-8 py-3 bg-white border border-brand-300 text-brand-700 font-bold rounded-full hover:bg-brand-50 transition shadow-sm flex items-center"><i class="fa-solid fa-chevron-down mr-2"></i> Ver todos los productos</button>`;
+                } else {
+                    prodsCatalogo.forEach(p => catalogoGrid.innerHTML += renderTarjetaProducto(p));
+                    verTodosCont.innerHTML = '';
+                }
             }
+        }
+
+        function mostrarRestoCatalogo() {
+            mostrarTodosCatalogo = true;
+            renderizarProductos();
         }
 
         function filtrarPorCategoria(cat) {
             filtroActual = cat;
+            mostrarTodosCatalogo = false; // Resetear el botón si cambian de categoría
             renderizarCategorias();
             renderizarProductos();
             document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -608,7 +696,6 @@
             const content = document.getElementById('productModalContent');
             modal.classList.remove('hidden');
             
-            // Pequeño timeout para la animación
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 content.classList.remove('scale-95');
@@ -625,7 +712,6 @@
             }, 300);
         }
 
-        // Cierra el modal si se hace click fuera de él
         document.getElementById('productModal').addEventListener('click', function(e) {
             if (e.target === this) closeProductModal();
         });
