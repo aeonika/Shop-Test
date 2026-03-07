@@ -225,13 +225,44 @@
             <div id="sec-configuracion" class="tab-content hidden space-y-6 max-w-3xl">
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 sm:p-6">
                     <h3 class="text-lg font-semibold mb-4 border-b border-slate-100 pb-2">Datos de la Tienda</h3>
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         <input type="hidden" id="conf-id">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Nombre de la Tienda</label>
                             <input type="text" id="conf-nombre" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                         </div>
                         
+                        <!-- NUEVO: Selector de Temas -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-3">Apariencia (Color Principal)</label>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                <button type="button" onclick="seleccionarTema('lumina', '#d48c89')" id="theme-btn-lumina" class="theme-btn border-2 border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 transition hover:bg-slate-50">
+                                    <div class="w-8 h-8 rounded-full bg-[#d48c89] shadow-sm"></div>
+                                    <span class="text-xs font-medium text-slate-700 text-center">Lumina<br>(Original)</span>
+                                </button>
+                                <button type="button" onclick="seleccionarTema('zafiro', '#2563eb')" id="theme-btn-zafiro" class="theme-btn border-2 border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 transition hover:bg-slate-50">
+                                    <div class="w-8 h-8 rounded-full bg-[#2563eb] shadow-sm"></div>
+                                    <span class="text-xs font-medium text-slate-700 text-center">Zafiro<br>(Azul)</span>
+                                </button>
+                                <button type="button" onclick="seleccionarTema('esmeralda', '#059669')" id="theme-btn-esmeralda" class="theme-btn border-2 border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 transition hover:bg-slate-50">
+                                    <div class="w-8 h-8 rounded-full bg-[#059669] shadow-sm"></div>
+                                    <span class="text-xs font-medium text-slate-700 text-center">Esmeralda<br>(Verde)</span>
+                                </button>
+                                <button type="button" onclick="seleccionarTema('cuarzo', '#1e293b')" id="theme-btn-cuarzo" class="theme-btn border-2 border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 transition hover:bg-slate-50">
+                                    <div class="w-8 h-8 rounded-full bg-[#1e293b] shadow-sm"></div>
+                                    <span class="text-xs font-medium text-slate-700 text-center">Cuarzo<br>(Oscuro)</span>
+                                </button>
+                                <button type="button" onclick="seleccionarTema('custom', '')" id="theme-btn-custom" class="theme-btn border-2 border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 transition hover:bg-slate-50 relative group">
+                                    <div class="w-8 h-8 rounded-full shadow-sm overflow-hidden border border-slate-200 relative">
+                                        <input type="color" id="conf-color-custom" class="absolute -inset-2 w-12 h-12 cursor-pointer" onchange="actualizarColorCustom(this.value)">
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-700 text-center">A medida<br>(Paleta)</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="conf-tema-id" value="lumina">
+                            <input type="hidden" id="conf-tema-hex" value="#d48c89">
+                        </div>
+
                         <!-- Logo con Subida de Archivo -->
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Logo de la Tienda</label>
@@ -284,8 +315,17 @@
                             </div>
                         </div>
 
-                        <div class="pt-4">
-                            <button onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
+                        <!-- NUEVO: Textos del Footer -->
+                        <hr class="my-6 border-slate-100">
+                        <h3 class="text-lg font-semibold mb-4 border-b border-slate-100 pb-2">Pie de Página (Footer)</h3>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Texto de Bienvenida / Eslogan</label>
+                            <textarea id="conf-footer-desc" rows="2" placeholder="Ej: Tu tienda online de accesorios..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
+                        </div>
+
+                        <div class="pt-6">
+                            <button onclick="guardarConfiguracion()" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white px-8 py-3 rounded-lg transition shadow-sm font-bold text-lg">Guardar Configuración</button>
                         </div>
                     </div>
                 </div>
@@ -512,11 +552,9 @@
         }
 
         function removerImagen(hiddenElId, previewImgId, iconId, fileInputId, btnRmId) {
-            // Vacía el texto oculto y el selector de archivos
             document.getElementById(hiddenElId).value = '';
             if(fileInputId) document.getElementById(fileInputId).value = '';
             
-            // Oculta la foto y muestra el ícono
             const pImg = document.getElementById(previewImgId);
             if(pImg) {
                 pImg.src = '';
@@ -526,7 +564,6 @@
             const pIcon = document.getElementById(iconId);
             if(pIcon) pIcon.classList.remove('hidden');
             
-            // Oculta el botón de borrar
             const btnRm = document.getElementById(btnRmId);
             if(btnRm) btnRm.classList.add('hidden');
         }
@@ -579,7 +616,6 @@
             const { data: cats } = await supabaseClient.from('categorias').select('*').order('id', { ascending: true });
             dbCategorias = cats || [];
             
-            // Cargar Productos y forzar el orden correcto
             const { data: prods } = await supabaseClient.from('productos').select('*').order('orden', { ascending: true }).order('id', { ascending: false });
             dbProductos = prods || [];
             dbProductos.forEach((p, i) => p.orden = i);
@@ -945,12 +981,52 @@
             }
         }
 
-        // --- CONFIG & ENVÍOS ---
+        // --- CONFIG & LÓGICA DE TEMAS ---
+        function seleccionarTema(temaId, hexCode) {
+            document.getElementById('conf-tema-id').value = temaId;
+            
+            // Limpiar estilos de los botones
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('border-brand-500', 'bg-brand-50');
+                btn.classList.add('border-slate-100');
+            });
+            
+            // Agregar borde y fondo al seleccionado
+            const activeBtn = document.getElementById(`theme-btn-${temaId}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('border-slate-100');
+                activeBtn.classList.add('border-brand-500', 'bg-brand-50');
+            }
+
+            if (temaId !== 'custom') {
+                document.getElementById('conf-tema-hex').value = hexCode;
+                document.getElementById('conf-color-custom').value = hexCode;
+            } else {
+                // Si es custom, leer directamente lo que dice el color picker
+                document.getElementById('conf-tema-hex').value = document.getElementById('conf-color-custom').value;
+            }
+        }
+
+        function actualizarColorCustom(hexCode) {
+            seleccionarTema('custom', hexCode);
+        }
+
         function renderConfig() {
             document.getElementById('conf-id').value = dbConfig.id || '';
             document.getElementById('conf-nombre').value = dbConfig.nombre_tienda || '';
             document.getElementById('conf-wp').value = dbConfig.whatsapp || '';
             
+            // Cargar Tema
+            const temaId = dbConfig.tema_id || 'lumina';
+            const temaHex = dbConfig.tema_custom_hex || '#d48c89';
+            if (temaId === 'custom') {
+                document.getElementById('conf-color-custom').value = temaHex;
+            }
+            seleccionarTema(temaId, temaHex);
+
+            // Cargar Footer Desc
+            document.getElementById('conf-footer-desc').value = dbConfig.footer_desc || 'Tu tienda online de accesorios y bijouterie. Diseños únicos para cada momento especial.';
+
             // Cargar Logo
             document.getElementById('conf-logo').value = dbConfig.logo_url || '';
             if (dbConfig.logo_url) {
@@ -985,7 +1061,10 @@
                 whatsapp: document.getElementById('conf-wp').value,
                 hero_titulo: document.getElementById('conf-hero-titulo').value,
                 hero_subtitulo: document.getElementById('conf-hero-subtitulo').value,
-                hero_img: document.getElementById('conf-hero-img').value
+                hero_img: document.getElementById('conf-hero-img').value,
+                tema_id: document.getElementById('conf-tema-id').value,
+                tema_custom_hex: document.getElementById('conf-tema-hex').value,
+                footer_desc: document.getElementById('conf-footer-desc').value
             };
             const { error } = await supabaseClient.from('configuracion').update(data).eq('id', id);
             if(!error) showToast("Configuración guardada en la nube");
@@ -1029,9 +1108,7 @@
 
         function seleccionarIcono(iconoClass) {
             if(tarjetaEnEdicionIcono !== null) {
-                // Actualizamos el input oculto
                 document.getElementById(`envio-icon-${tarjetaEnEdicionIcono}`).value = iconoClass;
-                // Actualizamos la vista previa visual
                 document.getElementById(`envio-icon-preview-${tarjetaEnEdicionIcono}`).className = iconoClass;
             }
             cerrarSelectorIconos();
@@ -1047,7 +1124,6 @@
                         <h4 class="font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">Tarjeta ${i + 1}</h4>
                         
                         <div class="space-y-4">
-                            <!-- Selector de Icono Visual -->
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-2">Icono</label>
                                 <input type="hidden" id="envio-icon-${i}" value="${envio.icono}">
