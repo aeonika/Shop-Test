@@ -62,23 +62,22 @@
         </div>
         
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scrollbar">
-            <!-- SE AGREGÓ TYPE="BUTTON" PARA EVITAR RECARGAS FANTASMAS -->
-            <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center px-4 py-3 bg-brand-500 text-white rounded-xl transition">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center px-4 py-3 bg-brand-500 text-white rounded-xl transition">
                 <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
             </button>
-            <button type="button" onclick="switchTab('productos')" id="nav-productos" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button onclick="switchTab('productos')" id="nav-productos" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-gem w-6"></i> Productos
             </button>
-            <button type="button" onclick="switchTab('categorias')" id="nav-categorias" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button onclick="switchTab('categorias')" id="nav-categorias" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-tags w-6"></i> Categorías
             </button>
-            <button type="button" onclick="switchTab('testimonios')" id="nav-testimonios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button onclick="switchTab('testimonios')" id="nav-testimonios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-star w-6"></i> Testimonios
             </button>
-            <button type="button" onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button onclick="switchTab('configuracion')" id="nav-configuracion" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-gear w-6"></i> Configuración
             </button>
-            <button type="button" onclick="switchTab('envios')" id="nav-envios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
+            <button onclick="switchTab('envios')" id="nav-envios" class="nav-btn w-full flex items-center px-4 py-3 text-slate-400 hover:bg-admin-800 hover:text-white rounded-xl transition">
                 <i class="fa-solid fa-truck w-6"></i> Envíos y Retiros
             </button>
         </nav>
@@ -87,7 +86,7 @@
             <a href="index.html" target="_blank" class="flex items-center justify-center w-full px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg transition text-sm">
                 <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Ver Tienda
             </a>
-            <button type="button" onclick="cerrarSesion()" class="flex items-center justify-center w-full px-4 py-2 border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition text-sm">
+            <button onclick="cerrarSesion()" class="flex items-center justify-center w-full px-4 py-2 border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition text-sm">
                 <i class="fa-solid fa-right-from-bracket mr-2"></i> Cerrar Sesión
             </button>
         </div>
@@ -97,7 +96,7 @@
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
         <header class="bg-white shadow-sm border-b border-slate-200 px-8 py-4 flex justify-between items-center z-10 shrink-0">
             <div class="flex items-center gap-4">
-                <button type="button" onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-brand-500 transition">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-brand-500 transition">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
                 <h1 id="pageTitle" class="text-xl font-semibold text-slate-800">Panel de Control</h1>
@@ -107,7 +106,7 @@
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-8 relative">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8 relative">
             
             <!-- SECTION: DASHBOARD -->
             <div id="sec-dashboard" class="tab-content block space-y-6">
@@ -147,7 +146,7 @@
             <div id="sec-productos" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-medium text-slate-700">Inventario</h2>
-                    <button type="button" onclick="abrirModalProducto()" class="bg-brand-500 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium flex items-center shadow-sm">
+                    <button onclick="abrirModalProducto()" class="bg-brand-500 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium flex items-center shadow-sm">
                         <i class="fa-solid fa-plus mr-2"></i> Nuevo Producto
                     </button>
                 </div>
@@ -178,7 +177,7 @@
                     <h3 class="text-lg font-semibold mb-4">Añadir Categoría</h3>
                     <form onsubmit="agregarCategoria(event)" class="flex flex-col sm:flex-row gap-4">
                         <input type="text" id="nuevaCategoria" required placeholder="Ej: Relojes" class="w-full sm:flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <button type="submit" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg transition font-medium">Agregar</button>
+                        <button type="submit" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg transition font-medium shadow-sm">Agregar</button>
                     </form>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-x-auto">
@@ -214,7 +213,7 @@
 
             <!-- SECTION: CONFIGURACIÓN -->
             <div id="sec-configuracion" class="tab-content hidden space-y-6 max-w-3xl">
-                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 sm:p-6">
                     <h3 class="text-lg font-semibold mb-4 border-b border-slate-100 pb-2">Datos de la Tienda</h3>
                     <div class="space-y-4">
                         <input type="hidden" id="conf-id">
@@ -234,7 +233,7 @@
                             </div>
                         </div>
                         <div class="pt-4">
-                            <button type="button" onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
+                            <button onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
                         </div>
                     </div>
                 </div>
@@ -246,7 +245,7 @@
                     <!-- JS fill -->
                 </div>
                 <div class="flex justify-end pt-4">
-                    <button type="button" onclick="guardarEnvios()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Tarjetas</button>
+                    <button onclick="guardarEnvios()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Tarjetas</button>
                 </div>
             </div>
 
@@ -254,15 +253,15 @@
     </main>
 
     <!-- Modal Producto -->
-    <div id="modalProducto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex justify-center items-center opacity-0 transition-opacity">
+    <div id="modalProducto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex justify-center items-center opacity-0 transition-opacity p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform" id="modalContent">
             <div class="flex justify-between items-center p-6 border-b border-slate-100">
                 <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Nuevo Producto</h3>
-                <button type="button" onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form onsubmit="guardarProducto(event)" class="p-6 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-700 mb-1">Nombre del Producto</label>
                         <input type="text" id="prod-nombre" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                     </div>
@@ -280,11 +279,11 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Precio Normal ($)</label>
                         <input type="number" id="prod-precio" min="0" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                     </div>
-                    <div class="col-span-2">
+                    <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-700 mb-1">URL de la Imagen</label>
                         <input type="text" id="prod-imagen" placeholder="https://..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
                     </div>
-                    <div class="col-span-2">
+                    <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-700 mb-1">Breve Descripción (Opcional)</label>
                         <textarea id="prod-descripcion" rows="2" placeholder="Ej: Hermoso anillo de plata 925 ideal para regalos..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
                     </div>
@@ -319,7 +318,7 @@
     </div>
 
     <!-- Modal Confirmación (Custom) -->
-    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] hidden flex justify-center items-center opacity-0 transition-opacity">
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] hidden flex justify-center items-center opacity-0 transition-opacity p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform scale-95 transition-transform text-center" id="confirmModalContent">
             <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -327,8 +326,8 @@
             <h3 class="text-xl font-bold text-slate-800 mb-2">Confirmar Acción</h3>
             <p id="confirmMessage" class="text-slate-500 mb-6 text-sm">¿Estás seguro?</p>
             <div class="flex justify-center space-x-3">
-                <button type="button" id="btnConfirmNo" class="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition">Cancelar</button>
-                <button type="button" id="btnConfirmYes" class="px-6 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium transition shadow-sm">Sí, eliminar</button>
+                <button id="btnConfirmNo" class="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition">Cancelar</button>
+                <button id="btnConfirmYes" class="px-6 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium transition shadow-sm">Sí, eliminar</button>
             </div>
         </div>
     </div>
@@ -446,39 +445,6 @@
             if(statFlash) statFlash.textContent = dbProductos.filter(p => p.relampago).length;
         }
 
-        // --- UTILIDADES GLOBALES DE CONFIRMACIÓN ---
-        // Esta función reemplaza al "confirm()" nativo que falla en celulares
-        function customConfirm(mensaje) {
-            return new Promise((resolve) => {
-                const modal = document.getElementById('confirmModal');
-                const content = document.getElementById('confirmModalContent');
-                document.getElementById('confirmMessage').textContent = mensaje;
-                
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.classList.remove('opacity-0');
-                    content.classList.remove('scale-95');
-                }, 10);
-
-                const btnYes = document.getElementById('btnConfirmYes');
-                const btnNo = document.getElementById('btnConfirmNo');
-
-                const cleanup = () => {
-                    modal.classList.add('opacity-0');
-                    content.classList.add('scale-95');
-                    setTimeout(() => modal.classList.add('hidden'), 300);
-                    btnYes.removeEventListener('click', onYes);
-                    btnNo.removeEventListener('click', onNo);
-                };
-
-                const onYes = () => { cleanup(); resolve(true); };
-                const onNo = () => { cleanup(); resolve(false); };
-
-                btnYes.addEventListener('click', onYes);
-                btnNo.addEventListener('click', onNo);
-            });
-        }
-
         // --- CATEGORIAS ---
         function renderCategorias() {
             const tbody = document.getElementById('tabla-categorias');
@@ -490,7 +456,7 @@
                     <tr>
                         <td class="p-4 text-slate-800 font-medium whitespace-nowrap">${cat.nombre}</td>
                         <td class="p-4 text-right whitespace-nowrap">
-                            <button type="button" onclick="eliminarCategoria('${cat.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="eliminarCategoria('${cat.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>`;
                 selectProd.innerHTML += `<option value="${cat.nombre}">${cat.nombre}</option>`;
@@ -523,8 +489,7 @@
                 return;
             }
 
-            const confirmado = await customConfirm(`¿Estás seguro de borrar la categoría "${categoriaInfo.nombre}"?`);
-            if(!confirmado) return;
+            if(!await customConfirm(`¿Estás seguro de borrar la categoría "${categoriaInfo.nombre}"?`)) return;
             
             const { error } = await supabaseClient.from('categorias').delete().eq('id', id);
             if(!error) {
@@ -550,14 +515,14 @@
                         <td class="p-4 font-medium whitespace-nowrap">$${prod.precio.toLocaleString()}</td>
                         <td class="p-4 whitespace-nowrap"><span class="px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${prod.stock}</span></td>
                         <td class="p-4 text-center">
-                            <button type="button" onclick="toggleBool('${prod.id}', 'destacado')" class="text-xl ${prod.destacado ? 'text-yellow-500' : 'text-slate-300'}"><i class="fa-solid fa-star"></i></button>
+                            <button onclick="toggleBool('${prod.id}', 'destacado')" class="text-xl ${prod.destacado ? 'text-yellow-500' : 'text-slate-300'}"><i class="fa-solid fa-star"></i></button>
                         </td>
                         <td class="p-4 text-center">
-                            <button type="button" onclick="toggleBool('${prod.id}', 'relampago')" class="text-xl ${prod.relampago ? 'text-red-500' : 'text-slate-300'}"><i class="fa-solid fa-bolt"></i></button>
+                            <button onclick="toggleBool('${prod.id}', 'relampago')" class="text-xl ${prod.relampago ? 'text-red-500' : 'text-slate-300'}"><i class="fa-solid fa-bolt"></i></button>
                         </td>
                         <td class="p-4 text-right space-x-2 whitespace-nowrap">
-                            <button type="button" onclick="editarProducto('${prod.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="eliminarProducto('${prod.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="editarProducto('${prod.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="eliminarProducto('${prod.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>`;
             });
@@ -587,9 +552,7 @@
         }
 
         async function eliminarProducto(id) {
-            const confirmado = await customConfirm("¿Eliminar este producto permanentemente?");
-            if(!confirmado) return;
-            
+            if(!await customConfirm("¿Eliminar este producto permanentemente?")) return;
             const { error } = await supabaseClient.from('productos').delete().eq('id', id);
             if(!error) {
                 dbProductos = dbProductos.filter(p => String(p.id) !== String(id));
@@ -709,7 +672,8 @@
                 cont.innerHTML += `
                     <div class="relative bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden aspect-[4/5] group">
                         <img src="${safeImg}" class="w-full h-full object-cover">
-                        <button type="button" onclick="eliminarTestimonio('${t.id}')" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg z-50 cursor-pointer">
+                        <!-- Botón modificado a z-10 para no pisar el menú de celular -->
+                        <button type="button" onclick="eliminarTestimonio('${t.id}')" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg z-10 cursor-pointer">
                             <i class="fa-solid fa-trash-can text-lg pointer-events-none"></i>
                         </button>
                     </div>`;
@@ -722,12 +686,11 @@
             const val = input.value.trim();
             if(!val) return;
 
-            // --- PROTECCIÓN: VALIDAR QUE SEA UNA URL ---
+            // --- PROTECCIÓN ANTI HACKEOS: VALIDAR QUE SEA UNA URL ---
             if(!val.toLowerCase().startsWith('http://') && !val.toLowerCase().startsWith('https://')) {
                 alert("⚠️ Error: Ingresaste texto o código no válido. Debes ingresar una URL (enlace) de imagen que comience con http:// o https://");
                 return;
             }
-            // -------------------------------------------
 
             const { data, error } = await supabaseClient.from('testimonios').insert([{ imagen: val }]).select();
             if(error) { alert("Error al guardar testimonio:\n" + error.message); return; }
@@ -741,8 +704,7 @@
         }
 
         async function eliminarTestimonio(id) {
-            const confirmado = await customConfirm("¿Estás seguro de borrar este testimonio?");
-            if(!confirmado) return;
+            if(!await customConfirm("¿Borrar este testimonio?")) return;
             
             const { error } = await supabaseClient.from('testimonios').delete().eq('id', id);
             
@@ -805,6 +767,37 @@
         }
 
         // --- UTILIDADES ---
+        function customConfirm(mensaje) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                const content = document.getElementById('confirmModalContent');
+                document.getElementById('confirmMessage').textContent = mensaje;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                }, 10);
+
+                const btnYes = document.getElementById('btnConfirmYes');
+                const btnNo = document.getElementById('btnConfirmNo');
+
+                const cleanup = () => {
+                    modal.classList.add('opacity-0');
+                    content.classList.add('scale-95');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                    btnYes.removeEventListener('click', onYes);
+                    btnNo.removeEventListener('click', onNo);
+                };
+
+                const onYes = () => { cleanup(); resolve(true); };
+                const onNo = () => { cleanup(); resolve(false); };
+
+                btnYes.addEventListener('click', onYes);
+                btnNo.addEventListener('click', onNo);
+            });
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
