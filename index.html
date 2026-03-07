@@ -24,16 +24,6 @@
     <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Script de Inicialización Modo Oscuro -->
-    <script>
-        // Por defecto siempre será claro, a menos que el usuario haya tocado el botón de la luna previamente
-        if (localStorage.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
-
     <!-- Variables CSS Dinámicas para el Tema -->
     <style id="theme-vars">
         :root {
@@ -103,10 +93,6 @@
                     <a href="#catalogo" class="text-gray-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-300 transition px-3 py-2 text-sm font-medium">Catálogo</a>
                 </nav>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <!-- Botón Modo Oscuro -->
-                    <button onclick="toggleDarkMode()" class="relative text-gray-600 hover:text-brand-700 dark:text-slate-300 dark:hover:text-brand-300 transition p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800">
-                        <i id="darkModeIcon" class="fa-solid fa-moon text-lg"></i>
-                    </button>
                     <!-- Botón Carrito -->
                     <button id="cartBtn" class="relative text-gray-600 hover:text-brand-700 dark:text-slate-300 dark:hover:text-brand-300 transition p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800">
                         <i class="fa-solid fa-bag-shopping text-xl"></i>
@@ -313,25 +299,6 @@
     </div>
 
     <script>
-        // --- LOGICA MODO OSCURO ---
-        function toggleDarkMode() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-                document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-                document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
-            }
-        });
-
         // --- CONEXIÓN SUPABASE ---
         const supabaseUrl = 'https://epoxwpqeqibeykqjihna.supabase.co';
         const supabaseKey = 'sb_publishable_1BlG2_E3YEXxRSmcT-Y8pw_AzvsuyOg';
@@ -422,10 +389,11 @@
                     // Cargar Color/Tema 
                     if (c.tema_id) aplicarTema(c.tema_id, c.tema_custom_hex);
 
-                    // Aplicar Modo Oscuro por defecto si está activado y el cliente no ha elegido nada aún
-                    if (c.modo_oscuro_default && !localStorage.getItem('theme')) {
+                    // Aplicar Modo Oscuro de forma estricta según lo que diga el admin
+                    if (c.modo_oscuro_default) {
                         document.documentElement.classList.add('dark');
-                        document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
+                    } else {
+                        document.documentElement.classList.remove('dark');
                     }
 
                     // Cargar Texto Footer
