@@ -150,13 +150,14 @@
                     <p class="text-brand-500 mt-2 font-medium">Gracias por elegirnos</p>
                 </div>
                 
-                <div class="relative">
+                <!-- Añadimos la clase 'group' aquí para detectar el mouse en toda el área -->
+                <div class="relative group">
                     <!-- Flecha Izquierda -->
                     <button id="btnTestimonioPrev" onclick="desplazarTestimonios(-1)" class="hidden">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
 
-                    <!-- Contenedor Desplazable (Quitamos scroll-smooth de aquí) -->
+                    <!-- Contenedor Desplazable -->
                     <div class="flex overflow-x-auto space-x-6 pb-6 pt-2 px-4 hide-scrollbar snap-x snap-mandatory" id="testimoniosGrid">
                         <!-- Las fotos se inyectan con JS -->
                     </div>
@@ -360,9 +361,10 @@
             const grid = document.getElementById('testimoniosGrid');
             if (!grid || grid.children.length === 0) return;
             
-            // Calculamos el ancho de una tarjeta + el espacio (gap) para mover exactamente 1 foto a la vez
-            const cardWidth = grid.children[0].offsetWidth + 24; // 24px corresponde a la clase space-x-6
-            grid.scrollBy({ left: cardWidth * direccion, behavior: 'smooth' });
+            // Calculamos el ancho de la tarjeta y le sumamos un margen extra (+50px).
+            // Esto asegura que el impulso venza la fuerza del "snap" y avance la imagen completa.
+            const cardWidth = grid.children[0].offsetWidth; 
+            grid.scrollBy({ left: (cardWidth + 50) * direccion, behavior: 'smooth' });
         }
 
         function renderTestimonios(testimonios) {
@@ -382,17 +384,17 @@
                 ];
             }
             
-            // Mostrar flechas solo en escritorio (md:flex) y si hay 4 o más testimonios
-            if (dataToRender.length >= 4) {
-                if (btnPrev) btnPrev.className = "hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -ml-2 sm:-ml-5 z-10 bg-white text-brand-700 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 transition focus:outline-none border border-gray-100";
-                if (btnNext) btnNext.className = "hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 -mr-2 sm:-mr-5 z-10 bg-white text-brand-700 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 transition focus:outline-none border border-gray-100";
+            // Mostrar flechas al pasar el mouse (hover) en cualquier tamaño de pantalla
+            if (dataToRender.length > 2) {
+                const baseClass = "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto flex absolute top-1/2 -translate-y-1/2 z-10 bg-white text-brand-700 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 transition-all duration-300 focus:outline-none border border-gray-100";
+                if (btnPrev) btnPrev.className = baseClass + " left-0 -ml-2 sm:-ml-5";
+                if (btnNext) btnNext.className = baseClass + " right-0 -mr-2 sm:-mr-5";
             } else {
                 if (btnPrev) btnPrev.className = "hidden";
                 if (btnNext) btnNext.className = "hidden";
             }
             
             dataToRender.forEach(t => {
-                // Añadimos 'snap-always' a cada tarjeta para forzar el frenado exacto
                 grid.innerHTML += `
                     <div class="shrink-0 w-64 sm:w-72 aspect-[4/5] snap-center snap-always rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 hover:shadow-md transition">
                         <img src="${t.imagen}" class="w-full h-full object-cover" alt="Testimonio de cliente">
