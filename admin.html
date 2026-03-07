@@ -252,6 +252,34 @@
                                 <input type="text" id="conf-wp" placeholder="Ej: 5491100000000" class="flex-1 w-full px-4 py-2 border border-slate-200 rounded-r-lg focus:ring-2 focus:ring-brand-500">
                             </div>
                         </div>
+
+                        <hr class="my-6 border-slate-100">
+                        <h3 class="text-lg font-semibold mb-4 border-b border-slate-100 pb-2">Sección Principal (Hero)</h3>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Título Principal</label>
+                            <input type="text" id="conf-hero-titulo" placeholder="Ej: Brilla con luz propia" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Subtítulo / Descripción</label>
+                            <textarea id="conf-hero-subtitulo" rows="2" placeholder="Ej: Descubre nuestra nueva colección..." class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Imagen de Fondo (Recomendado: Apaisada 1600x900px)</label>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-24 h-16 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                                    <img id="conf-hero-preview" src="" class="w-full h-full object-cover hidden">
+                                    <i id="conf-hero-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="hidden" id="conf-hero-img">
+                                    <input type="file" id="conf-hero-file" accept="image/*" onchange="procesarImagen(this, 'conf-hero-img', 'conf-hero-preview', 'conf-hero-icon', 1600, 0.80)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="pt-4">
                             <button onclick="guardarConfiguracion()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg transition shadow-sm font-medium">Guardar Cambios</button>
                         </div>
@@ -853,6 +881,21 @@
                 document.getElementById('conf-logo-preview').src = '';
                 document.getElementById('conf-logo-icon').classList.remove('hidden');
             }
+
+            // Cargar Hero
+            document.getElementById('conf-hero-titulo').value = dbConfig.hero_titulo || 'Brilla con luz propia';
+            document.getElementById('conf-hero-subtitulo').value = dbConfig.hero_subtitulo || 'Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural en cada ocasión.';
+            
+            document.getElementById('conf-hero-img').value = dbConfig.hero_img || '';
+            if (dbConfig.hero_img) {
+                document.getElementById('conf-hero-preview').src = dbConfig.hero_img;
+                document.getElementById('conf-hero-preview').classList.remove('hidden');
+                document.getElementById('conf-hero-icon').classList.add('hidden');
+            } else {
+                document.getElementById('conf-hero-preview').classList.add('hidden');
+                document.getElementById('conf-hero-preview').src = '';
+                document.getElementById('conf-hero-icon').classList.remove('hidden');
+            }
         }
 
         async function guardarConfiguracion() {
@@ -860,7 +903,10 @@
             const data = {
                 nombre_tienda: document.getElementById('conf-nombre').value,
                 logo_url: document.getElementById('conf-logo').value, // Base64 comprimido
-                whatsapp: document.getElementById('conf-wp').value
+                whatsapp: document.getElementById('conf-wp').value,
+                hero_titulo: document.getElementById('conf-hero-titulo').value,
+                hero_subtitulo: document.getElementById('conf-hero-subtitulo').value,
+                hero_img: document.getElementById('conf-hero-img').value // Imagen hero comprimida
             };
             const { error } = await supabaseClient.from('configuracion').update(data).eq('id', id);
             if(!error) showToast("Configuración guardada en la nube");
