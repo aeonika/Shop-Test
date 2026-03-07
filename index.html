@@ -337,8 +337,8 @@
                 const { data: cats } = await supabaseClient.from('categorias').select('*');
                 if (cats) cats.forEach(c => categorias.push(c.nombre));
 
-                // 3. Cargar Productos
-                const { data: prods } = await supabaseClient.from('productos').select('*').order('id', { ascending: false });
+                // 3. Cargar Productos (Ahora respetan el orden personalizado del admin)
+                const { data: prods } = await supabaseClient.from('productos').select('*').order('orden', { ascending: true }).order('id', { ascending: false });
                 if (prods) productos = prods;
 
                 // 4. Cargar Envíos
