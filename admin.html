@@ -30,7 +30,7 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased h-screen flex overflow-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 antialiased h-[100dvh] flex overflow-hidden">
 
     <!-- Pantalla de Login -->
     <div id="loginOverlay" class="fixed inset-0 bg-admin-900 z-[100] flex justify-center items-center transition-opacity duration-300">
@@ -106,7 +106,8 @@
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-4 sm:p-8 relative">
+        <!-- ESPACIO INFERIOR EXTRA (pb-28) PARA QUE LOS BOTONES NO QUEDEN OCULTOS EN CELULARES -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8 pb-28 sm:pb-12 relative">
             
             <!-- SECTION: DASHBOARD -->
             <div id="sec-dashboard" class="tab-content block space-y-6">
@@ -305,9 +306,9 @@
     </main>
 
     <!-- Modal Producto -->
-    <div id="modalProducto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex justify-center items-center opacity-0 transition-opacity p-4">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform" id="modalContent">
-            <div class="flex justify-between items-center p-6 border-b border-slate-100">
+    <div id="modalProducto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex justify-center items-center opacity-0 transition-opacity p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform my-auto" id="modalContent">
+            <div class="flex justify-between items-center p-6 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Nuevo Producto</h3>
                 <button type="button" onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
@@ -326,6 +327,7 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1 flex justify-between items-center">
                             Stock (Unidades)
+                            <!-- Switch Sin Stock -->
                             <label class="flex items-center space-x-1.5 cursor-pointer bg-red-50 px-2 py-0.5 rounded-full border border-red-100 hover:bg-red-100 transition">
                                 <input type="checkbox" id="prod-agotado" onchange="toggleAgotado()" class="w-3.5 h-3.5 text-red-500 rounded cursor-pointer accent-red-500">
                                 <span class="text-[11px] text-red-600 font-bold uppercase tracking-wide">Sin Stock</span>
@@ -380,7 +382,7 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-3 pt-4">
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100 mt-4">
                     <button type="button" onclick="cerrarModalProducto()" class="px-6 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Cancelar</button>
                     <button type="submit" id="btnGuardarProd" class="bg-brand-500 text-white px-6 py-2 rounded-lg hover:bg-brand-600 transition">Guardar</button>
                 </div>
@@ -551,11 +553,9 @@
             const { data: cats } = await supabaseClient.from('categorias').select('*').order('id', { ascending: true });
             dbCategorias = cats || [];
             
-            // Cargar Productos respetando el orden personalizado
+            // Cargar Productos y forzar el orden correcto
             const { data: prods } = await supabaseClient.from('productos').select('*').order('orden', { ascending: true }).order('id', { ascending: false });
             dbProductos = prods || [];
-            
-            // Forzamos un orden secuencial limpio por si hay valores nulos o recién creados
             dbProductos.forEach((p, i) => p.orden = i);
 
             const { data: conf } = await supabaseClient.from('configuracion').select('*').limit(1);
@@ -654,7 +654,7 @@
                         </td>
                         <td class="p-4 text-slate-500 whitespace-nowrap">${prod.categoria}</td>
                         <td class="p-4 font-medium whitespace-nowrap">$${prod.precio.toLocaleString()}</td>
-                        <td class="p-4 whitespace-nowrap"><span class="px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${prod.stock}</span></td>
+                        <td class="p-4 whitespace-nowrap"><span class="px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${prod.stock > 0 ? prod.stock : 'Agotado'}</span></td>
                         <td class="p-4 text-center">
                             <button onclick="toggleBool('${prod.id}', 'destacado')" class="text-xl ${prod.destacado ? 'text-yellow-500' : 'text-slate-300'}"><i class="fa-solid fa-star"></i></button>
                         </td>
@@ -713,16 +713,13 @@
             const p1 = dbProductos[index];
             const p2 = dbProductos[index + direccion];
 
-            // Intercambiamos el valor de "orden" localmente
             const tempOrden = p1.orden;
             p1.orden = p2.orden;
             p2.orden = tempOrden;
 
-            // Reordenamos visualmente y redibujamos al instante
             dbProductos.sort((a, b) => a.orden - b.orden);
             renderProductos();
 
-            // Guardamos el nuevo orden en Supabase en segundo plano
             await supabaseClient.from('productos').update({ orden: p1.orden }).eq('id', p1.id);
             await supabaseClient.from('productos').update({ orden: p2.orden }).eq('id', p2.id);
         }
@@ -763,7 +760,6 @@
             document.getElementById('prod-relampago').checked = false;
             document.getElementById('prod-desc').value = '';
             
-            // Limpiar vista previa de imagen y botón "Quitar"
             removerImagen('prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 'prod-file', 'btn-rm-prod');
 
             toggleRelampagoPrice();
@@ -794,7 +790,6 @@
             document.getElementById('prod-relampago').checked = p.relampago;
             document.getElementById('prod-desc').value = p.desc_relampago || '';
             
-            // Cargar imagen existente en la vista previa
             document.getElementById('prod-imagen').value = p.imagen || '';
             document.getElementById('prod-file').value = '';
             if (p.imagen) {
@@ -844,7 +839,7 @@
                 dbProductos[idx] = { ...dbProductos[idx], ...prod };
                 showToast("Producto actualizado");
             } else {
-                prod.orden = dbProductos.length; // Posicionarlo al final de la lista por defecto
+                prod.orden = dbProductos.length;
                 const { data, error } = await supabaseClient.from('productos').insert([prod]).select();
                 if(error) {
                     alert("Error en la base de datos:\n" + error.message);
@@ -904,7 +899,6 @@
                 dbTestimonios.unshift(data[0]);
             }
             
-            // Limpiar la vista previa después de agregar
             removerImagen('nuevoTestimonioImg', 'testimonio-preview', 'testimonio-icon', 'nuevoTestimonioFile', 'btn-rm-test');
 
             renderTestimonios();
