@@ -24,6 +24,16 @@
     <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- Script de Inicialización Modo Oscuro (Evita flash blanco) -->
+    <script>
+        // Por defecto siempre será claro, a menos que el usuario haya tocado el botón de la luna previamente
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <!-- Variables CSS Dinámicas para el Tema -->
     <style id="theme-vars">
         :root {
@@ -38,6 +48,7 @@
 
     <script>
         tailwind.config = {
+            darkMode: 'class', // Habilitamos Modo Oscuro nativo
             theme: {
                 extend: {
                     colors: {
@@ -70,63 +81,67 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-brand-50 font-sans text-brand-900 antialiased transition-colors duration-500">
+<body class="bg-brand-50 font-sans text-brand-900 antialiased transition-colors duration-500 dark:bg-slate-900 dark:text-slate-100">
 
     <!-- Loading Overlay Inicial -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center transition-opacity duration-500">
-        <!-- Reduje el mb-6 a mb-4 para que el logo y el texto queden más agrupados -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white dark:bg-slate-900 z-[100] flex flex-col justify-center items-center transition-opacity duration-500">
         <img id="loadingLogoImg" src="" alt="Logo" class="h-28 w-auto object-contain mb-4 animate-pulse hidden">
-        <h2 id="loadingTextTitle" class="font-serif text-3xl font-bold text-brand-700 tracking-wider mb-6 animate-pulse hidden"></h2>
+        <h2 id="loadingTextTitle" class="font-serif text-3xl font-bold text-brand-700 dark:text-brand-300 tracking-wider mb-6 animate-pulse hidden"></h2>
         <div class="loader"></div>
     </div>
 
     <!-- Navbar -->
-    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-sm">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm transition-colors duration-500 border-b border-transparent dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="scrollToSection('hero')">
-                    <span id="navLogo" class="flex items-center font-serif text-2xl font-bold text-brand-700 tracking-wider">LUMINA</span>
+                    <span id="navLogo" class="flex items-center font-serif text-2xl font-bold text-brand-700 dark:text-brand-300 tracking-wider transition-colors duration-500">LUMINA</span>
                 </div>
                 <nav class="hidden md:flex space-x-8">
-                    <a href="#destacados" class="text-gray-600 hover:text-brand-500 transition px-3 py-2 text-sm font-medium">Destacados</a>
-                    <a href="#relampago" class="text-brand-500 hover:text-brand-700 transition px-3 py-2 text-sm font-medium flex items-center"><i class="fa-solid fa-bolt mr-1"></i> Flash</a>
-                    <a href="#catalogo" class="text-gray-600 hover:text-brand-500 transition px-3 py-2 text-sm font-medium">Catálogo</a>
+                    <a href="#destacados" class="text-gray-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-300 transition px-3 py-2 text-sm font-medium">Destacados</a>
+                    <a href="#relampago" class="text-brand-500 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition px-3 py-2 text-sm font-medium flex items-center"><i class="fa-solid fa-bolt mr-1"></i> Flash</a>
+                    <a href="#catalogo" class="text-gray-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-300 transition px-3 py-2 text-sm font-medium">Catálogo</a>
                 </nav>
-                <div class="flex items-center space-x-4">
-                    <button id="cartBtn" class="relative text-gray-600 hover:text-brand-700 transition p-2">
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Botón Modo Oscuro -->
+                    <button onclick="toggleDarkMode()" class="relative text-gray-600 hover:text-brand-700 dark:text-slate-300 dark:hover:text-brand-300 transition p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800">
+                        <i id="darkModeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <!-- Botón Carrito -->
+                    <button id="cartBtn" class="relative text-gray-600 hover:text-brand-700 dark:text-slate-300 dark:hover:text-brand-300 transition p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800">
                         <i class="fa-solid fa-bag-shopping text-xl"></i>
                         <span id="cartBadge" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-brand-500 rounded-full transform translate-x-1/4 -translate-y-1/4 hidden">0</span>
                     </button>
                 </div>
             </div>
         </div>
-        <div class="bg-brand-100 border-t border-brand-300 overflow-x-auto hide-scrollbar transition-colors duration-500">
+        <div class="bg-brand-100 border-t border-brand-300 dark:bg-slate-800 dark:border-slate-700 overflow-x-auto hide-scrollbar transition-colors duration-500">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 py-2 text-sm" id="categoryMenu"></div>
         </div>
     </header>
 
     <main class="pb-16">
         <!-- Hero Section -->
-        <section id="hero" class="relative bg-brand-900 text-white overflow-hidden transition-colors duration-500">
+        <section id="hero" class="relative bg-brand-900 dark:bg-slate-950 text-white overflow-hidden transition-colors duration-500">
             <div class="absolute inset-0 bg-black/40 z-10"></div>
-            <div class="absolute inset-0 flex items-center justify-center bg-brand-700 transition-colors duration-500">
-                <img id="heroImg" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 flex items-center justify-center bg-brand-700 dark:bg-slate-900 transition-colors duration-500">
+                <img id="heroImg" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-60 dark:opacity-40">
             </div>
             <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center md:py-32">
                 <h1 id="heroTitulo" class="font-serif text-4xl md:text-6xl font-bold mb-4">Brilla con luz propia</h1>
-                <p id="heroSubtitulo" class="text-lg md:text-xl font-light mb-8 max-w-2xl mx-auto text-brand-50 transition-colors duration-500">Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural en cada ocasión.</p>
+                <p id="heroSubtitulo" class="text-lg md:text-xl font-light mb-8 max-w-2xl mx-auto text-brand-50 dark:text-slate-200 transition-colors duration-500">Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural en cada ocasión.</p>
                 <a href="#catalogo" class="inline-block bg-brand-500 hover:opacity-90 text-white font-medium px-8 py-3 rounded-full transition shadow-lg">Ver Colección</a>
             </div>
         </section>
 
         <!-- Venta Relámpago -->
         <section id="relampago" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8 hidden">
-            <div class="flex items-center justify-between mb-6 border-b border-brand-300 pb-2 transition-colors duration-500">
+            <div class="flex items-center justify-between mb-6 border-b border-brand-300 dark:border-slate-700 pb-2 transition-colors duration-500">
                 <div class="flex items-center">
                     <i class="fa-solid fa-bolt text-yellow-500 text-2xl mr-3"></i>
-                    <h2 class="font-serif text-2xl font-bold text-brand-900 transition-colors duration-500">Venta Relámpago</h2>
+                    <h2 class="font-serif text-2xl font-bold text-brand-900 dark:text-white transition-colors duration-500">Venta Relámpago</h2>
                 </div>
-                <div class="text-sm font-bold bg-red-100 text-red-600 px-3 py-1 rounded-full flex items-center">
+                <div class="text-sm font-bold bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-3 py-1 rounded-full flex items-center transition-colors">
                     <i class="fa-regular fa-clock mr-2"></i> <span id="countdown">02:45:30</span>
                 </div>
             </div>
@@ -134,9 +149,9 @@
         </section>
 
         <!-- Destacados -->
-        <section id="destacados" class="bg-white py-12">
+        <section id="destacados" class="bg-white dark:bg-slate-900 py-12 transition-colors duration-500">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="font-serif text-3xl font-bold text-center text-brand-900 mb-10 transition-colors duration-500">Piezas Destacadas</h2>
+                <h2 class="font-serif text-3xl font-bold text-center text-brand-900 dark:text-white mb-10 transition-colors duration-500">Piezas Destacadas</h2>
                 <div id="featuredGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></div>
             </div>
         </section>
@@ -144,10 +159,10 @@
         <!-- Catálogo -->
         <section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-                <h2 class="font-serif text-3xl font-bold text-brand-900 mb-4 md:mb-0 transition-colors duration-500">Todo el Catálogo</h2>
+                <h2 class="font-serif text-3xl font-bold text-brand-900 dark:text-white mb-4 md:mb-0 transition-colors duration-500">Todo el Catálogo</h2>
                 <div class="flex items-center space-x-2">
-                    <span class="text-sm text-gray-500">Filtrar:</span>
-                    <select id="mobileCategorySelect" class="bg-white border border-brand-300 text-brand-900 text-sm rounded-lg focus:ring-brand-500 p-2 transition-colors duration-500"></select>
+                    <span class="text-sm text-gray-500 dark:text-slate-400">Filtrar:</span>
+                    <select id="mobileCategorySelect" class="bg-white dark:bg-slate-800 border border-brand-300 dark:border-slate-600 text-brand-900 dark:text-slate-100 text-sm rounded-lg focus:ring-brand-500 p-2 transition-colors duration-500"></select>
                 </div>
             </div>
             
@@ -160,11 +175,11 @@
         </section>
 
         <!-- Testimonios de Compra -->
-        <section id="testimonios-sec" class="bg-white py-16">
+        <section id="testimonios-sec" class="bg-white dark:bg-slate-900 py-16 transition-colors duration-500 border-t border-transparent dark:border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-10">
-                    <h2 class="font-serif text-3xl font-bold text-brand-900 transition-colors duration-500">Clientes Felices</h2>
-                    <p class="text-brand-500 mt-2 font-medium transition-colors duration-500">Gracias por elegirnos</p>
+                    <h2 class="font-serif text-3xl font-bold text-brand-900 dark:text-white transition-colors duration-500">Clientes Felices</h2>
+                    <p class="text-brand-500 dark:text-brand-400 mt-2 font-medium transition-colors duration-500">Gracias por elegirnos</p>
                 </div>
                 
                 <div class="relative group">
@@ -184,11 +199,11 @@
         </section>
 
         <!-- Envíos (Dinámicos) -->
-        <section id="envios" class="bg-brand-100 py-16 border-t border-brand-300 transition-colors duration-500">
+        <section id="envios" class="bg-brand-100 dark:bg-slate-800 py-16 border-t border-brand-300 dark:border-slate-700 transition-colors duration-500">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="font-serif text-3xl font-bold text-brand-900 transition-colors duration-500">Envíos y Retiros</h2>
-                    <p class="text-brand-700 mt-2 font-medium transition-colors duration-500">Llevamos la magia a donde estés</p>
+                    <h2 class="font-serif text-3xl font-bold text-brand-900 dark:text-white transition-colors duration-500">Envíos y Retiros</h2>
+                    <p class="text-brand-700 dark:text-brand-300 mt-2 font-medium transition-colors duration-500">Llevamos la magia a donde estés</p>
                 </div>
                 <div id="enviosGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Se llena con Supabase -->
@@ -198,7 +213,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-brand-900 text-brand-100 py-10 transition-colors duration-500">
+    <footer class="bg-brand-900 dark:bg-slate-950 text-brand-100 dark:text-slate-300 py-10 transition-colors duration-500 border-t border-transparent dark:border-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-start">
                 <div class="mb-6 md:mb-0 text-center md:text-left">
@@ -212,12 +227,12 @@
                 </div>
             </div>
             
-            <div class="mt-8 pt-8 border-t border-brand-800 text-sm opacity-80 flex flex-col md:flex-row justify-between items-center transition-colors duration-500">
+            <div class="mt-8 pt-8 border-t border-brand-800 dark:border-slate-800 text-sm opacity-80 flex flex-col md:flex-row justify-between items-center transition-colors duration-500">
                 <div class="flex flex-wrap justify-center gap-4 mb-4 md:mb-0">
                     <a href="#" class="hover:text-white transition">Preguntas Frecuentes</a>
-                    <span class="hidden md:inline text-brand-700 transition-colors duration-500">•</span>
+                    <span class="hidden md:inline text-brand-700 dark:text-brand-500 transition-colors duration-500">•</span>
                     <a href="#" class="hover:text-white transition">Envíos y Devoluciones</a>
-                    <span class="hidden md:inline text-brand-700 transition-colors duration-500">•</span>
+                    <span class="hidden md:inline text-brand-700 dark:text-brand-500 transition-colors duration-500">•</span>
                     <a href="#" class="hover:text-white transition">Términos y Condiciones</a>
                 </div>
                 <div>&copy; <span id="year"></span> Todos los derechos reservados.</div>
@@ -227,24 +242,24 @@
 
     <!-- Carrito Drawer -->
     <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="cartDrawer" class="cart-slide-in fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-2xl flex flex-col">
-        <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-brand-50 transition-colors duration-500">
-            <h2 class="text-lg font-serif font-bold text-brand-900 transition-colors duration-500"><i class="fa-solid fa-bag-shopping mr-2"></i> Tu Carrito</h2>
-            <button id="closeCartBtn" class="text-gray-400 hover:text-gray-600 p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="cartDrawer" class="cart-slide-in fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl flex flex-col transition-colors duration-500">
+        <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-brand-50 dark:bg-slate-800 transition-colors duration-500">
+            <h2 class="text-lg font-serif font-bold text-brand-900 dark:text-white transition-colors duration-500"><i class="fa-solid fa-bag-shopping mr-2"></i> Tu Carrito</h2>
+            <button id="closeCartBtn" class="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-white p-2 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         
         <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4">
-            <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 hidden" id="emptyCartMsg">
+            <div class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-slate-500 space-y-4 hidden transition-colors" id="emptyCartMsg">
                 <i class="fa-solid fa-basket-shopping text-5xl opacity-20"></i>
                 <p>Tu carrito está vacío</p>
-                <button onclick="closeCart(); document.getElementById('catalogo').scrollIntoView();" class="text-brand-500 font-medium underline transition-colors duration-500">Ver productos</button>
+                <button onclick="closeCart(); document.getElementById('catalogo').scrollIntoView();" class="text-brand-500 dark:text-brand-400 font-medium underline transition-colors duration-500">Ver productos</button>
             </div>
         </div>
 
-        <div class="border-t border-gray-200 p-4 bg-gray-50">
+        <div class="border-t border-gray-200 dark:border-slate-700 p-4 bg-gray-50 dark:bg-slate-800 transition-colors duration-500">
             <div class="flex justify-between items-center mb-4">
-                <span class="text-gray-600 font-medium">Total:</span>
-                <span id="cartTotal" class="text-xl font-bold text-brand-900 transition-colors duration-500">$0</span>
+                <span class="text-gray-600 dark:text-slate-300 font-medium transition-colors">Total:</span>
+                <span id="cartTotal" class="text-xl font-bold text-brand-900 dark:text-white transition-colors duration-500">$0</span>
             </div>
             <button id="checkoutBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl shadow flex justify-center items-center transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 <i class="fa-brands fa-whatsapp text-xl mr-2"></i> Pedir por WhatsApp
@@ -254,28 +269,28 @@
 
     <!-- Modal de Detalles del Producto -->
     <div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto transform scale-95 transition-transform duration-300 flex flex-col md:flex-row relative hide-scrollbar" id="productModalContent">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto transform scale-95 transition-all duration-300 flex flex-col md:flex-row relative hide-scrollbar border border-transparent dark:border-slate-700" id="productModalContent">
             <!-- Botón cerrar -->
-            <button onclick="closeProductModal()" class="absolute top-4 right-4 z-20 bg-white/90 text-gray-600 hover:text-brand-700 transition-colors duration-500 p-2 rounded-full shadow-sm backdrop-blur"><i class="fa-solid fa-xmark text-xl w-6 h-6 flex items-center justify-center"></i></button>
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 z-20 bg-white/90 dark:bg-slate-800/90 text-gray-600 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-400 transition-colors duration-500 p-2 rounded-full shadow-sm backdrop-blur"><i class="fa-solid fa-xmark text-xl w-6 h-6 flex items-center justify-center"></i></button>
             
             <!-- Imagen -->
-            <div class="w-full md:w-1/2 h-72 md:h-auto bg-brand-50 transition-colors duration-500 relative flex-shrink-0">
+            <div class="w-full md:w-1/2 h-72 md:h-auto bg-brand-50 dark:bg-slate-800 transition-colors duration-500 relative flex-shrink-0">
                 <img id="modalProdImg" src="" alt="Producto" class="w-full h-full object-cover">
             </div>
             
             <!-- Detalles -->
-            <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col bg-white">
-                <span id="modalProdCat" class="text-sm text-brand-500 transition-colors duration-500 uppercase tracking-wider font-semibold mb-1"></span>
-                <h2 id="modalProdTitle" class="text-2xl md:text-3xl font-serif font-bold text-brand-900 transition-colors duration-500 mb-4 leading-tight"></h2>
+            <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col bg-white dark:bg-slate-900 transition-colors duration-500">
+                <span id="modalProdCat" class="text-sm text-brand-500 dark:text-brand-400 transition-colors duration-500 uppercase tracking-wider font-semibold mb-1"></span>
+                <h2 id="modalProdTitle" class="text-2xl md:text-3xl font-serif font-bold text-brand-900 dark:text-white transition-colors duration-500 mb-4 leading-tight"></h2>
                 
                 <div class="flex items-center mb-6">
-                    <span id="modalProdPriceOld" class="text-lg text-gray-400 line-through mr-3 hidden"></span>
-                    <span id="modalProdPrice" class="text-3xl font-bold text-brand-900 transition-colors duration-500"></span>
+                    <span id="modalProdPriceOld" class="text-lg text-gray-400 dark:text-slate-500 line-through mr-3 hidden"></span>
+                    <span id="modalProdPrice" class="text-3xl font-bold text-brand-900 dark:text-white transition-colors duration-500"></span>
                 </div>
                 
                 <div class="mb-6 flex-1">
-                    <h4 class="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wide">Descripción</h4>
-                    <p id="modalProdDesc" class="text-gray-600 text-sm md:text-base leading-relaxed whitespace-pre-wrap"></p>
+                    <h4 class="text-sm font-bold text-gray-800 dark:text-slate-200 mb-2 uppercase tracking-wide transition-colors">Descripción</h4>
+                    <p id="modalProdDesc" class="text-gray-600 dark:text-slate-400 text-sm md:text-base leading-relaxed whitespace-pre-wrap transition-colors"></p>
                 </div>
                 
                 <div class="mb-6">
@@ -291,13 +306,32 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden">
-        <div class="bg-brand-900 text-white px-6 py-3 rounded-full shadow-lg flex items-center text-sm font-medium transition-colors duration-500">
+        <div class="bg-brand-900 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center text-sm font-medium transition-colors duration-500">
             <i class="fa-solid fa-check-circle text-green-400 mr-2" id="toastIcon"></i>
             <span id="toastMsg">Producto agregado</span>
         </div>
     </div>
 
     <script>
+        // --- LOGICA MODO OSCURO ---
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+                document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+                document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
+            }
+        });
+
         // --- CONEXIÓN SUPABASE ---
         const supabaseUrl = 'https://epoxwpqeqibeykqjihna.supabase.co';
         const supabaseKey = 'sb_publishable_1BlG2_E3YEXxRSmcT-Y8pw_AzvsuyOg';
@@ -325,7 +359,6 @@
             };
 
             if (temaId === 'custom' && customHex) {
-                // Inteligencia para mezclar el color base y generar los tonos de la web automáticamente
                 const hexToRgb = hex => {
                     let r = 0, g = 0, b = 0;
                     if (hex.length === 4) { r = parseInt(hex[1]+hex[1], 16); g = parseInt(hex[2]+hex[2], 16); b = parseInt(hex[3]+hex[3], 16); } 
@@ -336,15 +369,15 @@
                 const mix = (c1, c2, w) => rgbToHex(Math.round(c1.r * (w/100) + c2.r * (1 - w/100)), Math.round(c1.g * (w/100) + c2.g * (1 - w/100)), Math.round(c1.b * (w/100) + c2.b * (1 - w/100)));
                 
                 const base = hexToRgb(customHex);
-                const w = {r: 255, g: 255, b: 255}; // Blanco
-                const bl = {r: 0, g: 0, b: 0};      // Negro
+                const w = {r: 255, g: 255, b: 255}; 
+                const bl = {r: 0, g: 0, b: 0};      
                 
-                root.style.setProperty('--brand-50', mix(base, w, 10)); // Súper clarito para fondos
+                root.style.setProperty('--brand-50', mix(base, w, 10)); 
                 root.style.setProperty('--brand-100', mix(base, w, 20));
                 root.style.setProperty('--brand-300', mix(base, w, 50));
-                root.style.setProperty('--brand-500', customHex);       // Color original para botones
-                root.style.setProperty('--brand-700', mix(base, bl, 80)); // Más oscuro para hover y footer 
-                root.style.setProperty('--brand-900', mix(base, bl, 50)); // Muy oscuro para textos
+                root.style.setProperty('--brand-500', customHex);       
+                root.style.setProperty('--brand-700', mix(base, bl, 80)); 
+                root.style.setProperty('--brand-900', mix(base, bl, 50)); 
             } else {
                 const p = paletas[temaId] || paletas['lumina'];
                 root.style.setProperty('--brand-50', p[50]);
@@ -368,7 +401,6 @@
                     document.title = `${c.nombre_tienda} | Tienda`;
                     document.getElementById('docTitle').textContent = `${c.nombre_tienda} | Tienda`;
                     
-                    // SIEMPRE mostrar el nombre de la tienda encima del circulito de carga
                     document.getElementById('loadingTextTitle').textContent = c.nombre_tienda;
                     document.getElementById('loadingTextTitle').classList.remove('hidden');
                     
@@ -472,7 +504,7 @@
             }
             
             if (dataToRender.length > 2) {
-                const baseClass = "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto flex absolute top-1/2 -translate-y-1/2 z-10 bg-white text-brand-700 transition-colors duration-500 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 border border-gray-100";
+                const baseClass = "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto flex absolute top-1/2 -translate-y-1/2 z-10 bg-white text-brand-700 transition-colors duration-500 w-10 h-10 rounded-full shadow-lg items-center justify-center hover:bg-brand-50 border border-gray-100 dark:bg-slate-800 dark:text-brand-300 dark:border-slate-700 dark:hover:bg-slate-700";
                 if (btnPrev) btnPrev.className = baseClass + " left-0 -ml-2 sm:-ml-5";
                 if (btnNext) btnNext.className = baseClass + " right-0 -mr-2 sm:-mr-5";
             } else {
@@ -482,7 +514,7 @@
             
             dataToRender.forEach(t => {
                 grid.innerHTML += `
-                    <div class="shrink-0 w-64 sm:w-72 aspect-[4/5] snap-center rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 hover:shadow-md transition">
+                    <div class="shrink-0 w-64 sm:w-72 aspect-[4/5] snap-center rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:shadow-md transition">
                         <img src="${t.imagen}" class="w-full h-full object-cover" alt="Testimonio de cliente">
                     </div>`;
             });
@@ -493,12 +525,12 @@
             grid.innerHTML = '';
             envs.forEach(env => {
                 grid.innerHTML += `
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-brand-50 hover:shadow-md transition text-center group">
-                        <div class="w-16 h-16 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-500 mb-4 text-2xl group-hover:scale-110 transition duration-300">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-brand-50 hover:shadow-md transition text-center group dark:bg-slate-800 dark:border-slate-700">
+                        <div class="w-16 h-16 mx-auto bg-brand-50 dark:bg-slate-700 rounded-full flex items-center justify-center text-brand-500 dark:text-brand-400 mb-4 text-2xl group-hover:scale-110 transition duration-300">
                             <i class="${env.icono}"></i>
                         </div>
-                        <h3 class="font-bold text-brand-900 mb-2 transition-colors duration-500">${env.titulo}</h3>
-                        <p class="text-sm text-gray-600">${env.descripcion}</p>
+                        <h3 class="font-bold text-brand-900 dark:text-white mb-2 transition-colors duration-500">${env.titulo}</h3>
+                        <p class="text-sm text-gray-600 dark:text-slate-400 transition-colors">${env.descripcion}</p>
                     </div>`;
             });
         }
@@ -510,7 +542,7 @@
 
             categorias.forEach(cat => {
                 const link = document.createElement('button');
-                link.className = `whitespace-nowrap font-medium transition-colors duration-300 ${filtroActual === cat ? 'text-brand-700 border-b-2 border-brand-700' : 'text-gray-500 hover:text-brand-500'}`;
+                link.className = `whitespace-nowrap font-medium transition-colors duration-300 ${filtroActual === cat ? 'text-brand-700 border-b-2 border-brand-700 dark:text-brand-300 dark:border-brand-300' : 'text-gray-500 hover:text-brand-500 dark:text-slate-400 dark:hover:text-brand-300'}`;
                 link.textContent = cat;
                 link.onclick = () => filtrarPorCategoria(cat);
                 menu.appendChild(link);
@@ -526,34 +558,34 @@
 
         function renderTarjetaProducto(prod, tipo = 'normal') {
             const precioMostrar = (tipo === 'relampago' && prod.relampago && prod.desc_relampago) ? prod.desc_relampago : prod.precio;
-            const precioViejo = (tipo === 'relampago' && prod.relampago && prod.desc_relampago) ? `<span class="text-sm text-gray-400 line-through mr-2">$${prod.precio.toLocaleString()}</span>` : '';
+            const precioViejo = (tipo === 'relampago' && prod.relampago && prod.desc_relampago) ? `<span class="text-sm text-gray-400 dark:text-slate-500 line-through mr-2">$${prod.precio.toLocaleString()}</span>` : '';
             
             const btnDisabled = prod.stock === 0 ? 'disabled' : '';
-            const btnClass = prod.stock === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-brand-100 text-brand-700 hover:bg-brand-500 hover:text-white transition-colors duration-300';
+            const btnClass = prod.stock === 0 ? 'bg-gray-300 text-gray-500 dark:bg-slate-700 dark:text-slate-400 cursor-not-allowed' : 'bg-brand-100 text-brand-700 hover:bg-brand-500 hover:text-white dark:bg-brand-900/40 dark:text-brand-300 dark:hover:bg-brand-500 dark:hover:text-white transition-colors duration-300';
             
             const badge = prod.stock > 0 && prod.stock <= 3 
-                ? `<span class="absolute top-2 left-2 bg-orange-100 text-orange-600 text-xs font-bold px-2 py-1 rounded z-10">¡Solo ${prod.stock}!</span>` 
-                : (prod.stock === 0 ? `<span class="absolute top-2 left-2 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded z-10">Agotado</span>` : '');
+                ? `<span class="absolute top-2 left-2 bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-xs font-bold px-2 py-1 rounded z-10 transition-colors">¡Solo ${prod.stock}!</span>` 
+                : (prod.stock === 0 ? `<span class="absolute top-2 left-2 bg-gray-200 text-gray-600 dark:bg-slate-700 dark:text-slate-300 text-xs font-bold px-2 py-1 rounded z-10 transition-colors">Agotado</span>` : '');
 
             const relampagoBadge = tipo === 'relampago' ? `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10"><i class="fa-solid fa-bolt"></i> Oferta</span>` : '';
 
             return `
-                <div onclick="openProductModal(${prod.id})" class="bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden border border-gray-100 flex flex-col group relative h-full cursor-pointer">
+                <div onclick="openProductModal(${prod.id})" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden border border-gray-100 dark:border-slate-700 flex flex-col group relative h-full cursor-pointer">
                     ${badge} ${relampagoBadge}
-                    <div class="aspect-square w-full bg-brand-50 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
+                    <div class="aspect-square w-full bg-brand-50 dark:bg-slate-700 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
                         <img src="${prod.imagen || 'https://via.placeholder.com/400?text=Lumina'}" alt="${prod.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
                     <div class="p-4 flex flex-col flex-1">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs text-brand-500 uppercase tracking-wider font-medium transition-colors duration-500">${prod.categoria}</span>
-                            <span class="text-xs ${prod.stock > 0 ? 'text-gray-500' : 'text-red-500'} font-medium">Stock: ${prod.stock}</span>
+                            <span class="text-xs text-brand-500 dark:text-brand-400 uppercase tracking-wider font-medium transition-colors duration-500">${prod.categoria}</span>
+                            <span class="text-xs ${prod.stock > 0 ? 'text-gray-500 dark:text-slate-400' : 'text-red-500 dark:text-red-400'} font-medium transition-colors">Stock: ${prod.stock}</span>
                         </div>
-                        <h3 class="font-medium text-gray-800 text-sm md:text-base leading-tight ${prod.descripcion ? 'mb-1' : 'mb-2 flex-1'}">${prod.nombre}</h3>
-                        ${prod.descripcion ? `<p class="text-xs text-gray-500 line-clamp-2 mb-2 flex-1" title="${prod.descripcion}">${prod.descripcion}</p>` : ''}
+                        <h3 class="font-medium text-gray-800 dark:text-slate-100 text-sm md:text-base leading-tight transition-colors ${prod.descripcion ? 'mb-1' : 'mb-2 flex-1'}">${prod.nombre}</h3>
+                        ${prod.descripcion ? `<p class="text-xs text-gray-500 dark:text-slate-400 line-clamp-2 mb-2 flex-1 transition-colors" title="${prod.descripcion}">${prod.descripcion}</p>` : ''}
                         <div class="flex justify-between items-end mt-auto pt-2">
                             <div>
                                 ${precioViejo}
-                                <span class="font-bold text-lg text-brand-900 transition-colors duration-500">$${precioMostrar.toLocaleString()}</span>
+                                <span class="font-bold text-lg text-brand-900 dark:text-white transition-colors duration-500">$${precioMostrar.toLocaleString()}</span>
                             </div>
                             <button onclick="event.stopPropagation(); agregarAlCarrito(${prod.id})" ${btnDisabled} class="w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${btnClass}">
                                 <i class="fa-solid ${prod.stock === 0 ? 'fa-xmark' : 'fa-plus'}"></i>
@@ -586,14 +618,14 @@
             prodsDestacados.forEach(p => destacadosGrid.innerHTML += renderTarjetaProducto(p));
 
             if(prodsCatalogo.length === 0){
-                catalogoGrid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No hay productos aquí.</div>`;
+                catalogoGrid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 dark:text-slate-500 transition-colors">No hay productos aquí.</div>`;
                 verTodosCont.innerHTML = '';
             } else {
                 const limite = 21;
                 
                 if (prodsCatalogo.length > limite && !mostrarTodosCatalogo) {
                     prodsCatalogo.slice(0, limite).forEach(p => catalogoGrid.innerHTML += renderTarjetaProducto(p));
-                    verTodosCont.innerHTML = `<button onclick="mostrarRestoCatalogo()" class="px-8 py-3 bg-white border border-brand-300 text-brand-700 font-bold rounded-full hover:bg-brand-50 transition shadow-sm flex items-center"><i class="fa-solid fa-chevron-down mr-2"></i> Ver todos los productos</button>`;
+                    verTodosCont.innerHTML = `<button onclick="mostrarRestoCatalogo()" class="px-8 py-3 bg-white dark:bg-slate-800 border border-brand-300 dark:border-slate-600 text-brand-700 dark:text-brand-400 font-bold rounded-full hover:bg-brand-50 dark:hover:bg-slate-700 transition shadow-sm flex items-center"><i class="fa-solid fa-chevron-down mr-2"></i> Ver todos los productos</button>`;
                 } else {
                     prodsCatalogo.forEach(p => catalogoGrid.innerHTML += renderTarjetaProducto(p));
                     verTodosCont.innerHTML = '';
@@ -684,19 +716,19 @@
                 carrito.forEach(item => {
                     totalCosto += (item.precio * item.cantidad);
                     const div = document.createElement('div');
-                    div.className = "flex items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm";
+                    div.className = "flex items-center bg-white dark:bg-slate-800 p-3 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm transition-colors";
                     div.innerHTML = `
-                        <div class="w-16 h-16 bg-brand-50 rounded flex items-center justify-center mr-3 overflow-hidden shrink-0 transition-colors duration-500">
+                        <div class="w-16 h-16 bg-brand-50 dark:bg-slate-700 rounded flex items-center justify-center mr-3 overflow-hidden shrink-0 transition-colors duration-500">
                             <img src="${item.imagen || 'https://via.placeholder.com/100?text=Lumina'}" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-medium text-gray-800 truncate">${item.nombre}</h4>
-                            <p class="text-brand-700 font-bold text-sm transition-colors duration-500">$${item.precio.toLocaleString()}</p>
+                            <h4 class="text-sm font-medium text-gray-800 dark:text-slate-100 truncate transition-colors">${item.nombre}</h4>
+                            <p class="text-brand-700 dark:text-brand-300 font-bold text-sm transition-colors duration-500">$${item.precio.toLocaleString()}</p>
                         </div>
-                        <div class="flex items-center bg-gray-50 rounded-lg ml-2 border border-gray-200">
-                            <button onclick="modificarCantidad(${item.id}, -1)" class="w-8 h-8 text-gray-500 hover:text-brand-700">-</button>
-                            <span class="w-6 text-center text-sm font-medium">${item.cantidad}</span>
-                            <button onclick="modificarCantidad(${item.id}, 1)" class="w-8 h-8 text-gray-500 hover:text-brand-700 ${item.cantidad >= item.stockMax ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                        <div class="flex items-center bg-gray-50 dark:bg-slate-700 rounded-lg ml-2 border border-gray-200 dark:border-slate-600 transition-colors">
+                            <button onclick="modificarCantidad(${item.id}, -1)" class="w-8 h-8 text-gray-500 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-300">-</button>
+                            <span class="w-6 text-center text-sm font-medium dark:text-white">${item.cantidad}</span>
+                            <button onclick="modificarCantidad(${item.id}, 1)" class="w-8 h-8 text-gray-500 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-300 ${item.cantidad >= item.stockMax ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
                         </div>`;
                     cartItemsCont.insertBefore(div, emptyMsg);
                 });
@@ -760,10 +792,10 @@
             const stockEl = document.getElementById('modalProdStock');
             if (prod.stock > 0) {
                 stockEl.textContent = `Stock disponible: ${prod.stock}`;
-                stockEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700';
+                stockEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 transition-colors';
             } else {
                 stockEl.textContent = 'Agotado';
-                stockEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-600';
+                stockEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-slate-400 transition-colors';
             }
 
             const btn = document.getElementById('modalProdBtn');
@@ -774,7 +806,7 @@
                 btn.onclick = () => { agregarAlCarrito(prod.id); closeProductModal(); openCart(); };
             } else {
                 btn.disabled = true;
-                btn.className = 'w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl flex justify-center items-center cursor-not-allowed mt-auto transition-all duration-300';
+                btn.className = 'w-full bg-gray-300 text-gray-500 dark:bg-slate-700 dark:text-slate-400 font-bold py-4 px-6 rounded-xl flex justify-center items-center cursor-not-allowed mt-auto transition-all duration-300';
                 btn.innerHTML = 'Agotado';
                 btn.onclick = null;
             }
