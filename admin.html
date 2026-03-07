@@ -206,11 +206,12 @@
                             <img id="testimonio-preview" src="" class="w-full h-full object-cover hidden">
                             <i id="testimonio-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
                         </div>
-                        <div class="flex-1 w-full">
+                        <div class="flex-1 w-full flex flex-col items-start justify-center">
                             <input type="hidden" id="nuevoTestimonioImg">
-                            <input type="file" id="nuevoTestimonioFile" accept="image/*" onchange="procesarImagen(this, 'nuevoTestimonioImg', 'testimonio-preview', 'testimonio-icon', 600, 0.75)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                            <input type="file" id="nuevoTestimonioFile" accept="image/*" onchange="procesarImagen(this, 'nuevoTestimonioImg', 'testimonio-preview', 'testimonio-icon', 400, 0.70, 'btn-rm-test')" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                            <button type="button" id="btn-rm-test" onclick="removerImagen('nuevoTestimonioImg', 'testimonio-preview', 'testimonio-icon', 'nuevoTestimonioFile', 'btn-rm-test')" class="hidden text-xs text-red-500 mt-2 font-medium hover:underline"><i class="fa-solid fa-trash-can mr-1"></i> Quitar selección</button>
                         </div>
-                        <button type="submit" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-full transition font-medium shadow-sm h-[40px] flex items-center justify-center">Agregar</button>
+                        <button type="submit" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-full transition font-medium shadow-sm h-[40px] flex items-center justify-center mt-2 sm:mt-0">Agregar</button>
                     </form>
                 </div>
                 
@@ -238,9 +239,10 @@
                                     <img id="conf-logo-preview" src="" class="w-full h-full object-contain hidden">
                                     <i id="conf-logo-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
                                 </div>
-                                <div class="flex-1">
+                                <div class="flex-1 flex flex-col items-start justify-center">
                                     <input type="hidden" id="conf-logo">
-                                    <input type="file" id="conf-file" accept="image/*" onchange="procesarImagen(this, 'conf-logo', 'conf-logo-preview', 'conf-logo-icon', 400, 0.85)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                    <input type="file" id="conf-file" accept="image/*" onchange="procesarImagen(this, 'conf-logo', 'conf-logo-preview', 'conf-logo-icon', 300, 0.80, 'btn-rm-logo')" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                    <button type="button" id="btn-rm-logo" onclick="removerImagen('conf-logo', 'conf-logo-preview', 'conf-logo-icon', 'conf-file', 'btn-rm-logo')" class="hidden text-xs text-red-500 mt-2 font-medium hover:underline"><i class="fa-solid fa-trash-can mr-1"></i> Quitar logo</button>
                                 </div>
                             </div>
                         </div>
@@ -273,9 +275,10 @@
                                     <img id="conf-hero-preview" src="" class="w-full h-full object-cover hidden">
                                     <i id="conf-hero-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
                                 </div>
-                                <div class="flex-1">
+                                <div class="flex-1 flex flex-col items-start justify-center">
                                     <input type="hidden" id="conf-hero-img">
-                                    <input type="file" id="conf-hero-file" accept="image/*" onchange="procesarImagen(this, 'conf-hero-img', 'conf-hero-preview', 'conf-hero-icon', 1600, 0.80)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                    <input type="file" id="conf-hero-file" accept="image/*" onchange="procesarImagen(this, 'conf-hero-img', 'conf-hero-preview', 'conf-hero-icon', 1280, 0.70, 'btn-rm-hero')" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                    <button type="button" id="btn-rm-hero" onclick="removerImagen('conf-hero-img', 'conf-hero-preview', 'conf-hero-icon', 'conf-hero-file', 'btn-rm-hero')" class="hidden text-xs text-red-500 mt-2 font-medium hover:underline"><i class="fa-solid fa-trash-can mr-1"></i> Quitar fondo</button>
                                 </div>
                             </div>
                         </div>
@@ -336,9 +339,10 @@
                                 <img id="prod-imagen-preview" src="" class="w-full h-full object-cover hidden">
                                 <i id="prod-imagen-icon" class="fa-solid fa-image text-slate-300 text-xl"></i>
                             </div>
-                            <div class="flex-1 w-full">
+                            <div class="flex-1 w-full flex flex-col items-start justify-center">
                                 <input type="hidden" id="prod-imagen">
-                                <input type="file" id="prod-file" accept="image/*" onchange="procesarImagen(this, 'prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 800, 0.80)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                <input type="file" id="prod-file" accept="image/*" onchange="procesarImagen(this, 'prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 600, 0.70, 'btn-rm-prod')" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer">
+                                <button type="button" id="btn-rm-prod" onclick="removerImagen('prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 'prod-file', 'btn-rm-prod')" class="hidden text-xs text-red-500 mt-2 font-medium hover:underline"><i class="fa-solid fa-trash-can mr-1"></i> Quitar imagen</button>
                             </div>
                         </div>
                     </div>
@@ -414,7 +418,7 @@
         let dbTestimonios = [];
         let productoEnEdicion = null;
 
-        // --- MOTOR DE COMPRESIÓN DE IMÁGENES NATIVO (HTML5 Canvas) ---
+        // --- MOTOR DE COMPRESIÓN Y UTILIDADES DE IMAGEN ---
         async function compressImage(file, maxWidth, quality) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -427,7 +431,6 @@
                         let width = img.width;
                         let height = img.height;
 
-                        // Redimensionar respetando proporciones
                         if (width > maxWidth) {
                             height = Math.round((height * maxWidth) / width);
                             width = maxWidth;
@@ -438,7 +441,6 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // Convertir a WebP con la calidad indicada
                         const compressedBase64 = canvas.toDataURL('image/webp', quality);
                         resolve(compressedBase64);
                     };
@@ -448,26 +450,23 @@
             });
         }
 
-        async function procesarImagen(inputEl, hiddenElId, previewImgId, iconId, maxWidth, quality) {
+        async function procesarImagen(inputEl, hiddenElId, previewImgId, iconId, maxWidth, quality, btnRmId) {
             const file = inputEl.files[0];
             if (!file) return;
 
             showToast("Comprimiendo imagen...");
-            inputEl.disabled = true; // Bloqueamos el input temporalmente
+            inputEl.disabled = true;
 
             try {
-                // LLamamos al motor de compresión
                 const base64 = await compressImage(file, maxWidth, quality);
-                
-                // Guardamos el texto comprimido en el input oculto
                 document.getElementById(hiddenElId).value = base64;
 
-                // Actualizamos la vista previa visualmente
                 if (previewImgId) {
                     const pImg = document.getElementById(previewImgId);
                     pImg.src = base64;
                     pImg.classList.remove('hidden');
                     if(iconId) document.getElementById(iconId).classList.add('hidden');
+                    if(btnRmId) document.getElementById(btnRmId).classList.remove('hidden');
                 }
                 showToast("¡Imagen lista y optimizada!");
             } catch (error) {
@@ -477,17 +476,30 @@
             }
         }
 
-        // --- PROTECCIÓN ANTI HACKEOS / ERRORES ---
+        function removerImagen(hiddenElId, previewImgId, iconId, fileInputId, btnRmId) {
+            // Vacía el texto oculto y el selector de archivos
+            document.getElementById(hiddenElId).value = '';
+            if(fileInputId) document.getElementById(fileInputId).value = '';
+            
+            // Oculta la foto y muestra el ícono
+            const pImg = document.getElementById(previewImgId);
+            if(pImg) {
+                pImg.src = '';
+                pImg.classList.add('hidden');
+            }
+            
+            const pIcon = document.getElementById(iconId);
+            if(pIcon) pIcon.classList.remove('hidden');
+            
+            // Oculta el botón de borrar
+            const btnRm = document.getElementById(btnRmId);
+            if(btnRm) btnRm.classList.add('hidden');
+        }
+
         function escapeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>'"]/g, function(match) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[match];
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match];
             });
         }
 
@@ -702,12 +714,8 @@
             document.getElementById('prod-relampago').checked = false;
             document.getElementById('prod-desc').value = '';
             
-            // Limpiar imagen y vista previa
-            document.getElementById('prod-imagen').value = '';
-            document.getElementById('prod-file').value = '';
-            document.getElementById('prod-imagen-preview').classList.add('hidden');
-            document.getElementById('prod-imagen-preview').src = '';
-            document.getElementById('prod-imagen-icon').classList.remove('hidden');
+            // Limpiar vista previa de imagen y botón "Quitar"
+            removerImagen('prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 'prod-file', 'btn-rm-prod');
 
             toggleRelampagoPrice();
             document.getElementById('modalProducto').classList.remove('hidden', 'opacity-0');
@@ -730,15 +738,14 @@
             
             // Cargar imagen existente en la vista previa
             document.getElementById('prod-imagen').value = p.imagen || '';
-            document.getElementById('prod-file').value = ''; // Limpiamos el input de archivo
+            document.getElementById('prod-file').value = '';
             if (p.imagen) {
                 document.getElementById('prod-imagen-preview').src = p.imagen;
                 document.getElementById('prod-imagen-preview').classList.remove('hidden');
                 document.getElementById('prod-imagen-icon').classList.add('hidden');
+                document.getElementById('btn-rm-prod').classList.remove('hidden');
             } else {
-                document.getElementById('prod-imagen-preview').classList.add('hidden');
-                document.getElementById('prod-imagen-preview').src = '';
-                document.getElementById('prod-imagen-icon').classList.remove('hidden');
+                removerImagen('prod-imagen', 'prod-imagen-preview', 'prod-imagen-icon', 'prod-file', 'btn-rm-prod');
             }
 
             toggleRelampagoPrice();
@@ -761,7 +768,7 @@
                 categoria: document.getElementById('prod-categoria').value,
                 stock: Number(document.getElementById('prod-stock').value),
                 precio: Number(document.getElementById('prod-precio').value),
-                imagen: document.getElementById('prod-imagen').value, // Base64 o URL vieja
+                imagen: document.getElementById('prod-imagen').value, 
                 descripcion: document.getElementById('prod-descripcion').value,
                 destacado: document.getElementById('prod-destacado').checked,
                 relampago: document.getElementById('prod-relampago').checked,
@@ -826,7 +833,6 @@
                 return;
             }
 
-            // Validar que sea un formato seguro (data:image generado por nuestro compresor o un viejo http)
             if(!val.startsWith('http') && !val.startsWith('data:image')) {
                 alert("⚠️ Archivo no válido.");
                 return;
@@ -839,12 +845,8 @@
                 dbTestimonios.unshift(data[0]);
             }
             
-            // Limpiar la vista previa
-            document.getElementById('nuevoTestimonioImg').value = '';
-            document.getElementById('nuevoTestimonioFile').value = '';
-            document.getElementById('testimonio-preview').classList.add('hidden');
-            document.getElementById('testimonio-preview').src = '';
-            document.getElementById('testimonio-icon').classList.remove('hidden');
+            // Limpiar la vista previa después de agregar
+            removerImagen('nuevoTestimonioImg', 'testimonio-preview', 'testimonio-icon', 'nuevoTestimonioFile', 'btn-rm-test');
 
             renderTestimonios();
             showToast("Testimonio agregado");
@@ -876,10 +878,9 @@
                 document.getElementById('conf-logo-preview').src = dbConfig.logo_url;
                 document.getElementById('conf-logo-preview').classList.remove('hidden');
                 document.getElementById('conf-logo-icon').classList.add('hidden');
+                document.getElementById('btn-rm-logo').classList.remove('hidden');
             } else {
-                document.getElementById('conf-logo-preview').classList.add('hidden');
-                document.getElementById('conf-logo-preview').src = '';
-                document.getElementById('conf-logo-icon').classList.remove('hidden');
+                removerImagen('conf-logo', 'conf-logo-preview', 'conf-logo-icon', 'conf-file', 'btn-rm-logo');
             }
 
             // Cargar Hero
@@ -891,10 +892,9 @@
                 document.getElementById('conf-hero-preview').src = dbConfig.hero_img;
                 document.getElementById('conf-hero-preview').classList.remove('hidden');
                 document.getElementById('conf-hero-icon').classList.add('hidden');
+                document.getElementById('btn-rm-hero').classList.remove('hidden');
             } else {
-                document.getElementById('conf-hero-preview').classList.add('hidden');
-                document.getElementById('conf-hero-preview').src = '';
-                document.getElementById('conf-hero-icon').classList.remove('hidden');
+                removerImagen('conf-hero-img', 'conf-hero-preview', 'conf-hero-icon', 'conf-hero-file', 'btn-rm-hero');
             }
         }
 
@@ -902,11 +902,11 @@
             const id = document.getElementById('conf-id').value;
             const data = {
                 nombre_tienda: document.getElementById('conf-nombre').value,
-                logo_url: document.getElementById('conf-logo').value, // Base64 comprimido
+                logo_url: document.getElementById('conf-logo').value,
                 whatsapp: document.getElementById('conf-wp').value,
                 hero_titulo: document.getElementById('conf-hero-titulo').value,
                 hero_subtitulo: document.getElementById('conf-hero-subtitulo').value,
-                hero_img: document.getElementById('conf-hero-img').value // Imagen hero comprimida
+                hero_img: document.getElementById('conf-hero-img').value
             };
             const { error } = await supabaseClient.from('configuracion').update(data).eq('id', id);
             if(!error) showToast("Configuración guardada en la nube");
