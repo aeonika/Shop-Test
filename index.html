@@ -4,27 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- ================= SEO GLOBAL ================= -->
-    <title id="docTitle">Lumina | Esencias Místicas</title>
-    <meta name="description" content="Descubre nuestra nueva colección de accesorios y bijouterie. Brilla con luz propia con diseños exclusivos y elegantes en Lumina.">
-    <meta name="keywords" content="bijouterie, accesorios, joyas, collares, anillos, pulseras, esencias misticas, lumina">
-    <meta name="author" content="Lumina">
+    <title id="docTitle">Tienda Online</title>
+    <meta name="description" content="Descubre nuestra nueva colección de accesorios y bijouterie.">
+    <meta name="keywords" content="bijouterie, accesorios, joyas, collares, anillos, pulseras">
+    <meta name="author" content="Tienda">
 
-    <!-- Open Graph / Facebook / WhatsApp (Lo que se ve al compartir el link) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Lumina | Esencias Místicas">
+    <meta property="og:title" id="ogTitle" content="Tienda Online">
     <meta property="og:description" content="Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural. Envío a todo el país.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80">
-    <!-- ============================================== -->
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Variables CSS Dinámicas para el Tema -->
     <style id="theme-vars">
         :root {
             --brand-50: #fdf8f6;
@@ -37,8 +30,31 @@
     </style>
 
     <script>
+        // 1. Evitar parpadeo de modo oscuro
+        const savedDark = localStorage.getItem('isDark');
+        if (savedDark === 'true') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // 2. Cargar colores guardados al instante
+        const savedThemeVars = localStorage.getItem('themeVars');
+        if (savedThemeVars) {
+            document.getElementById('theme-vars').innerHTML = savedThemeVars;
+        }
+
+        // 3. Cargar el nombre de la tienda para el título de la pestaña
+        const savedStoreName = localStorage.getItem('storeName');
+        if (savedStoreName) {
+            document.title = savedStoreName;
+            document.getElementById('ogTitle').content = savedStoreName;
+        }
+    </script>
+
+    <script>
         tailwind.config = {
-            darkMode: 'class', // Habilitamos Modo Oscuro nativo
+            darkMode: 'class', 
             theme: {
                 extend: {
                     colors: {
@@ -67,25 +83,38 @@
             from { opacity: 0; transform: translateY(20px) translateX(-50%); }
             to { opacity: 1; transform: translateY(0) translateX(-50%); }
         }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--brand-500); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Eliminamos las clases CSS del loader viejo que causaban conflictos */
     </style>
 </head>
 <body class="bg-brand-50 font-sans text-brand-900 antialiased transition-colors duration-500 dark:bg-slate-900 dark:text-slate-100">
 
-    <!-- Loading Overlay Inicial -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-white dark:bg-slate-900 z-[100] flex flex-col justify-center items-center transition-opacity duration-500">
+    <div id="loadingOverlay" class="fixed inset-0 bg-brand-50 dark:bg-slate-900 z-[100] flex flex-col justify-center items-center transition-opacity duration-500">
         <img id="loadingLogoImg" src="" alt="Logo" class="h-28 w-auto object-contain mb-4 animate-pulse hidden">
         <h2 id="loadingTextTitle" class="font-serif text-3xl font-bold text-brand-700 dark:text-brand-300 tracking-wider mb-6 animate-pulse hidden"></h2>
-        <div class="loader"></div>
+        
+        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-500 opacity-80"></i>
     </div>
 
-    <!-- Navbar -->
+    <script>
+        const savedLogo = localStorage.getItem('storeLogo');
+        const savedName = localStorage.getItem('justStoreName');
+        
+        if (savedLogo) {
+            const logoEl = document.getElementById('loadingLogoImg');
+            logoEl.src = savedLogo;
+            logoEl.classList.remove('hidden');
+        } else if (savedName) {
+            const titleEl = document.getElementById('loadingTextTitle');
+            titleEl.textContent = savedName;
+            titleEl.classList.remove('hidden');
+        }
+    </script>
+
     <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm transition-colors duration-500 border-b border-transparent dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="scrollToSection('hero')">
-                    <span id="navLogo" class="flex items-center font-serif text-2xl font-bold text-brand-700 dark:text-brand-300 tracking-wider transition-colors duration-500">LUMINA</span>
+                    <span id="navLogo" class="flex items-center font-serif text-2xl font-bold text-brand-700 dark:text-brand-300 tracking-wider transition-colors duration-500">Tienda</span>
                 </div>
                 <nav class="hidden md:flex space-x-8">
                     <a href="#destacados" class="text-gray-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-300 transition px-3 py-2 text-sm font-medium">Destacados</a>
@@ -93,7 +122,6 @@
                     <a href="#catalogo" class="text-gray-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-300 transition px-3 py-2 text-sm font-medium">Catálogo</a>
                 </nav>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <!-- Botón Carrito -->
                     <button id="cartBtn" class="relative text-gray-600 hover:text-brand-700 dark:text-slate-300 dark:hover:text-brand-300 transition p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800">
                         <i class="fa-solid fa-bag-shopping text-xl"></i>
                         <span id="cartBadge" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-brand-500 rounded-full transform translate-x-1/4 -translate-y-1/4 hidden">0</span>
@@ -107,20 +135,18 @@
     </header>
 
     <main class="pb-16">
-        <!-- Hero Section -->
         <section id="hero" class="relative bg-brand-900 dark:bg-slate-950 text-white overflow-hidden transition-colors duration-500">
             <div class="absolute inset-0 bg-black/40 z-10"></div>
             <div class="absolute inset-0 flex items-center justify-center bg-brand-700 dark:bg-slate-900 transition-colors duration-500">
                 <img id="heroImg" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-60 dark:opacity-40">
             </div>
             <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center md:py-32">
-                <h1 id="heroTitulo" class="font-serif text-4xl md:text-6xl font-bold mb-4">Brilla con luz propia</h1>
-                <p id="heroSubtitulo" class="text-lg md:text-xl font-light mb-8 max-w-2xl mx-auto text-brand-50 dark:text-slate-200 transition-colors duration-500">Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural en cada ocasión.</p>
+                <h1 id="heroTitulo" class="font-serif text-4xl md:text-6xl font-bold mb-4">Bienvenido</h1>
+                <p id="heroSubtitulo" class="text-lg md:text-xl font-light mb-8 max-w-2xl mx-auto text-brand-50 dark:text-slate-200 transition-colors duration-500">Descubre nuestra nueva colección.</p>
                 <a href="#catalogo" class="inline-block bg-brand-500 hover:opacity-90 text-white font-medium px-8 py-3 rounded-full transition shadow-lg">Ver Colección</a>
             </div>
         </section>
 
-        <!-- Venta Relámpago -->
         <section id="relampago" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8 hidden">
             <div class="flex items-center justify-between mb-6 border-b border-brand-300 dark:border-slate-700 pb-2 transition-colors duration-500">
                 <div class="flex items-center">
@@ -134,7 +160,6 @@
             <div id="flashGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"></div>
         </section>
 
-        <!-- Destacados -->
         <section id="destacados" class="bg-white dark:bg-slate-900 py-12 transition-colors duration-500">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="font-serif text-3xl font-bold text-center text-brand-900 dark:text-white mb-10 transition-colors duration-500">Piezas Destacadas</h2>
@@ -142,7 +167,6 @@
             </div>
         </section>
 
-        <!-- Catálogo -->
         <section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8">
                 <h2 class="font-serif text-3xl font-bold text-brand-900 dark:text-white mb-4 md:mb-0 transition-colors duration-500">Todo el Catálogo</h2>
@@ -154,13 +178,10 @@
             
             <div id="catalogGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
             
-            <!-- Botón Ver Todos -->
             <div id="verTodosContainer" class="flex justify-center w-full mt-8">
-                <!-- Se inyecta con JS -->
-            </div>
+                </div>
         </section>
 
-        <!-- Testimonios de Compra -->
         <section id="testimonios-sec" class="bg-white dark:bg-slate-900 py-16 transition-colors duration-500 border-t border-transparent dark:border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-10">
@@ -174,8 +195,7 @@
                     </button>
 
                     <div class="flex overflow-x-auto space-x-6 pb-6 pt-2 px-4 hide-scrollbar snap-x snap-mandatory" id="testimoniosGrid">
-                        <!-- JS fill -->
-                    </div>
+                        </div>
 
                     <button id="btnTestimonioNext" onclick="desplazarTestimonios(1)" class="hidden">
                         <i class="fa-solid fa-chevron-right"></i>
@@ -184,7 +204,6 @@
             </div>
         </section>
 
-        <!-- Envíos (Dinámicos) -->
         <section id="envios" class="bg-brand-100 dark:bg-slate-800 py-16 border-t border-brand-300 dark:border-slate-700 transition-colors duration-500">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -192,18 +211,16 @@
                     <p class="text-brand-700 dark:text-brand-300 mt-2 font-medium transition-colors duration-500">Llevamos la magia a donde estés</p>
                 </div>
                 <div id="enviosGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Se llena con Supabase -->
-                </div>
+                    </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-brand-900 dark:bg-slate-950 text-brand-100 dark:text-slate-300 py-10 transition-colors duration-500 border-t border-transparent dark:border-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-start">
                 <div class="mb-6 md:mb-0 text-center md:text-left">
-                    <span id="footerLogo" class="flex items-center justify-center md:justify-start font-serif text-2xl font-bold tracking-wider text-white">LUMINA</span>
+                    <span id="footerLogo" class="flex items-center justify-center md:justify-start font-serif text-2xl font-bold tracking-wider text-white">Tienda</span>
                     <p id="footerDesc" class="text-sm mt-2 opacity-80 max-w-xs">Tu tienda online de accesorios y bijouterie. Diseños únicos para cada momento especial.</p>
                 </div>
                 <div class="flex space-x-6 mb-6 md:mb-0">
@@ -226,7 +243,6 @@
         </div>
     </footer>
 
-    <!-- Carrito Drawer -->
     <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300"></div>
     <div id="cartDrawer" class="cart-slide-in fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl flex flex-col transition-colors duration-500">
         <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-brand-50 dark:bg-slate-800 transition-colors duration-500">
@@ -253,18 +269,14 @@
         </div>
     </div>
 
-    <!-- Modal de Detalles del Producto -->
     <div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto transform scale-95 transition-all duration-300 flex flex-col md:flex-row relative hide-scrollbar border border-transparent dark:border-slate-700" id="productModalContent">
-            <!-- Botón cerrar -->
             <button onclick="closeProductModal()" class="absolute top-4 right-4 z-20 bg-white/90 dark:bg-slate-800/90 text-gray-600 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-400 transition-colors duration-500 p-2 rounded-full shadow-sm backdrop-blur"><i class="fa-solid fa-xmark text-xl w-6 h-6 flex items-center justify-center"></i></button>
             
-            <!-- Imagen -->
             <div class="w-full md:w-1/2 h-72 md:h-auto bg-brand-50 dark:bg-slate-800 transition-colors duration-500 relative flex-shrink-0">
                 <img id="modalProdImg" src="" alt="Producto" class="w-full h-full object-cover">
             </div>
             
-            <!-- Detalles -->
             <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col bg-white dark:bg-slate-900 transition-colors duration-500">
                 <span id="modalProdCat" class="text-sm text-brand-500 dark:text-brand-400 transition-colors duration-500 uppercase tracking-wider font-semibold mb-1"></span>
                 <h2 id="modalProdTitle" class="text-2xl md:text-3xl font-serif font-bold text-brand-900 dark:text-white transition-colors duration-500 mb-4 leading-tight"></h2>
@@ -290,7 +302,6 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden">
         <div class="bg-brand-900 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center text-sm font-medium transition-colors duration-500">
             <i class="fa-solid fa-check-circle text-green-400 mr-2" id="toastIcon"></i>
@@ -316,14 +327,14 @@
 
         // --- GENERADOR Y APLICADOR DE TEMAS ---
         function aplicarTema(temaId, customHex) {
-            const root = document.documentElement;
-            
             const paletas = {
                 lumina: { 50: '#fdf8f6', 100: '#f2e8e5', 300: '#eebbba', 500: '#d48c89', 700: '#a35d5a', 900: '#4a2c2b' },
                 zafiro: { 50: '#eff6ff', 100: '#dbeafe', 300: '#93c5fd', 500: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
                 esmeralda: { 50: '#ecfdf5', 100: '#d1fae5', 300: '#6ee7b7', 500: '#059669', 700: '#047857', 900: '#064e3b' },
                 cuarzo: { 50: '#f8fafc', 100: '#f1f5f9', 300: '#cbd5e1', 500: '#475569', 700: '#334155', 900: '#0f172a' }
             };
+
+            let cssVars = `:root {\n`;
 
             if (temaId === 'custom' && customHex) {
                 const hexToRgb = hex => {
@@ -339,27 +350,30 @@
                 const w = {r: 255, g: 255, b: 255}; 
                 const bl = {r: 0, g: 0, b: 0};      
                 
-                root.style.setProperty('--brand-50', mix(base, w, 10)); 
-                root.style.setProperty('--brand-100', mix(base, w, 20));
-                root.style.setProperty('--brand-300', mix(base, w, 50));
-                root.style.setProperty('--brand-500', customHex);       
-                root.style.setProperty('--brand-700', mix(base, bl, 80)); 
-                root.style.setProperty('--brand-900', mix(base, bl, 50)); 
+                cssVars += `--brand-50: ${mix(base, w, 10)};\n`;
+                cssVars += `--brand-100: ${mix(base, w, 20)};\n`;
+                cssVars += `--brand-300: ${mix(base, w, 50)};\n`;
+                cssVars += `--brand-500: ${customHex};\n`;
+                cssVars += `--brand-700: ${mix(base, bl, 80)};\n`;
+                cssVars += `--brand-900: ${mix(base, bl, 50)};\n`;
             } else {
                 const p = paletas[temaId] || paletas['lumina'];
-                root.style.setProperty('--brand-50', p[50]);
-                root.style.setProperty('--brand-100', p[100]);
-                root.style.setProperty('--brand-300', p[300]);
-                root.style.setProperty('--brand-500', p[500]);
-                root.style.setProperty('--brand-700', p[700]);
-                root.style.setProperty('--brand-900', p[900]);
+                cssVars += `--brand-50: ${p[50]};\n`;
+                cssVars += `--brand-100: ${p[100]};\n`;
+                cssVars += `--brand-300: ${p[300]};\n`;
+                cssVars += `--brand-500: ${p[500]};\n`;
+                cssVars += `--brand-700: ${p[700]};\n`;
+                cssVars += `--brand-900: ${p[900]};\n`;
             }
+            cssVars += `}`;
+
+            document.getElementById('theme-vars').innerHTML = cssVars;
+            localStorage.setItem('themeVars', cssVars);
         }
 
         // --- CARGA DE DATOS (AL INICIAR) ---
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. Cargar Configuración General
                 const { data: config } = await supabaseClient.from('configuracion').select('*').limit(1);
                 if (config && config.length > 0) {
                     const c = config[0];
@@ -368,51 +382,50 @@
                     document.title = `${c.nombre_tienda} | Tienda`;
                     document.getElementById('docTitle').textContent = `${c.nombre_tienda} | Tienda`;
                     
+                    localStorage.setItem('storeName', `${c.nombre_tienda} | Tienda`);
+                    localStorage.setItem('justStoreName', c.nombre_tienda);
+
                     document.getElementById('loadingTextTitle').textContent = c.nombre_tienda;
                     document.getElementById('loadingTextTitle').classList.remove('hidden');
                     
                     if (c.logo_url) {
+                        localStorage.setItem('storeLogo', c.logo_url);
                         document.getElementById('loadingLogoImg').src = c.logo_url;
                         document.getElementById('loadingLogoImg').classList.remove('hidden');
                         document.getElementById('navLogo').innerHTML = `<img src="${c.logo_url}" alt="${c.nombre_tienda}" class="h-8 w-auto object-contain mr-2"><span class="truncate">${c.nombre_tienda}</span>`;
                         document.getElementById('footerLogo').innerHTML = `<img src="${c.logo_url}" alt="${c.nombre_tienda}" class="h-10 w-auto object-contain mr-3"><span>${c.nombre_tienda}</span>`;
                     } else {
+                        localStorage.removeItem('storeLogo');
                         document.getElementById('navLogo').textContent = c.nombre_tienda;
                         document.getElementById('footerLogo').textContent = c.nombre_tienda;
                     }
                     
-                    // Cargar configuración de la portada (Hero)
                     if (c.hero_titulo) document.getElementById('heroTitulo').textContent = c.hero_titulo;
                     if (c.hero_subtitulo) document.getElementById('heroSubtitulo').textContent = c.hero_subtitulo;
                     if (c.hero_img) document.getElementById('heroImg').src = c.hero_img;
 
-                    // Cargar Color/Tema 
                     if (c.tema_id) aplicarTema(c.tema_id, c.tema_custom_hex);
 
-                    // Aplicar Modo Oscuro de forma estricta según lo que diga el admin
                     if (c.modo_oscuro_default) {
                         document.documentElement.classList.add('dark');
+                        localStorage.setItem('isDark', 'true');
                     } else {
                         document.documentElement.classList.remove('dark');
+                        localStorage.setItem('isDark', 'false');
                     }
 
-                    // Cargar Texto Footer
                     if (c.footer_desc) document.getElementById('footerDesc').textContent = c.footer_desc;
                 }
 
-                // 2. Cargar Categorías
                 const { data: cats } = await supabaseClient.from('categorias').select('*');
                 if (cats) cats.forEach(c => categorias.push(c.nombre));
 
-                // 3. Cargar Productos
                 const { data: prods } = await supabaseClient.from('productos').select('*').order('orden', { ascending: true }).order('id', { ascending: false });
                 if (prods) productos = prods;
 
-                // 4. Cargar Envíos
                 const { data: envs } = await supabaseClient.from('envios').select('*').order('orden', { ascending: true });
                 if(envs) renderEnvios(envs);
 
-                // 5. Cargar Testimonios
                 const { data: tests } = await supabaseClient.from('testimonios').select('*').order('id', { ascending: false });
                 renderTestimonios(tests); 
 
