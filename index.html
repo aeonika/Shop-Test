@@ -92,7 +92,8 @@
         <img id="loadingLogoImg" src="" alt="Logo" class="h-28 w-auto object-contain mb-4 animate-pulse hidden">
         <h2 id="loadingTextTitle" class="font-serif text-3xl font-bold text-brand-700 dark:text-brand-300 tracking-wider mb-6 animate-pulse hidden"></h2>
         
-        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-500 opacity-80"></i>
+        <!-- Cambiamos fa-spin por animate-spin de Tailwind para asegurar el giro en móviles -->
+        <i class="fa-solid fa-circle-notch animate-spin text-4xl text-brand-500 opacity-80"></i>
     </div>
 
     <script>
