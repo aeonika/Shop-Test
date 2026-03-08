@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <!-- ================= SEO GLOBAL ================= -->
     <title id="docTitle">Tienda Online</title>
-    <meta name="description" content="Descubre nuestra nueva colección de accesorios y bijouterie.">
-    <meta name="keywords" content="bijouterie, accesorios, joyas, collares, anillos, pulseras">
+    <meta name="description" id="metaDesc" content="Descubre nuestra nueva colección de accesorios y bijouterie.">
+    <meta name="keywords" id="metaKeywords" content="bijouterie, accesorios, joyas, collares, anillos, pulseras">
     <meta name="author" content="Tienda">
 
+    <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:title" id="ogTitle" content="Tienda Online">
-    <meta property="og:description" content="Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural. Envío a todo el país.">
+    <meta property="og:description" id="ogDesc" content="Descubre nuestra nueva colección de accesorios diseñados para resaltar tu belleza natural. Envío a todo el país.">
+    <meta property="og:image" id="ogImage" content="">
+    <!-- ============================================== -->
+
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,6 +50,21 @@
         if (savedStoreName) {
             document.title = savedStoreName;
             document.getElementById('ogTitle').content = savedStoreName;
+        }
+
+        // 4. Cargar SEO instantáneo
+        const savedSeoDesc = localStorage.getItem('seoDesc');
+        if (savedSeoDesc) {
+            document.getElementById('metaDesc').content = savedSeoDesc;
+            document.getElementById('ogDesc').content = savedSeoDesc;
+        }
+        const savedSeoKeywords = localStorage.getItem('seoKeywords');
+        if (savedSeoKeywords) {
+            document.getElementById('metaKeywords').content = savedSeoKeywords;
+        }
+        const savedSeoImg = localStorage.getItem('seoImg');
+        if (savedSeoImg) {
+            document.getElementById('ogImage').content = savedSeoImg;
         }
     </script>
 
@@ -416,6 +432,21 @@
                     }
 
                     if (c.footer_desc) document.getElementById('footerDesc').textContent = c.footer_desc;
+
+                    // Cargar y guardar Metadatos SEO
+                    if (c.seo_desc) {
+                        localStorage.setItem('seoDesc', c.seo_desc);
+                        document.getElementById('metaDesc').content = c.seo_desc;
+                        document.getElementById('ogDesc').content = c.seo_desc;
+                    }
+                    if (c.seo_keywords) {
+                        localStorage.setItem('seoKeywords', c.seo_keywords);
+                        document.getElementById('metaKeywords').content = c.seo_keywords;
+                    }
+                    if (c.seo_img) {
+                        localStorage.setItem('seoImg', c.seo_img);
+                        document.getElementById('ogImage').content = c.seo_img;
+                    }
                 }
 
                 const { data: cats } = await supabaseClient.from('categorias').select('*');
